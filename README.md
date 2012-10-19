@@ -31,3 +31,8 @@ to only upgrade one dependency at the same time. After each single dependency up
  
 
 # lifecycle
+* find possible updates (see versions-mojo)
+* generate poms according to the strategies
+ * execute each test run according to strategy
+ * stop/continue
+* write results into pom.xml
