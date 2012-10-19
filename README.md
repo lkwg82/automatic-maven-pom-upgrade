@@ -15,5 +15,19 @@ to only upgrade one dependency at the same time. After each single dependency up
 * implement some rules/hooks
   * break the build when an increased number of compile warnings are detected
   * exclude some artifacts to be upgraded (e.g. spring etc.)
-  * some version rules (how to handle version 1-rc2?)
+  * some version rules (how to handle version 1-rc2?) (XML/JAVA?)
+* (?) risk: update dependencies with excludes 
 
+# update strategies
+* deep-update
+ * for each found dependency which could be upgraded, try to update to the latest running version
+ * try the next possible to be updated dependency
+ * iterate until nothing left or no successfull update possible
+* wide-update
+ * for each found dependency which could be upgraded, try to update to the next running version
+ * try the next possible to be updated dependency
+ * iterate until nothing left or no successfull update possible
+* new other combined strategies (combination/variations)
+ 
+
+# lifecycle
