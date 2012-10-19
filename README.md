@@ -36,3 +36,7 @@ to only upgrade one dependency at the same time. After each single dependency up
  * execute each test run according to strategy
  * stop/continue
 * write results into pom.xml
+
+# flow-control-implementation
+* step-bny-step version updates as mojo
+* calling the verification phase with clean/compile/test/verify/etc within a java executor, wrapping the mojo calls
