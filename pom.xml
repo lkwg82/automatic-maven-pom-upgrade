@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>mojo-parent</artifactId>
+    <version>30</version>
+  </parent>
+
+  <groupId>de.lgohlke.maven</groupId>
+  <artifactId>automatic-upgrade-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>0.1-SNAPSHOT</version>
+  <name>automatic-upgrade mojo</name>
+  <description>mojo to automatically upgrade the pom.xml and commit the changes</description>
+  <inceptionYear>2012</inceptionYear>
+
+  <developers>
+    <developer>
+      <id>lkwg82</id>
+      <name>Lars Gohlke</name>
+      <timezone>+1</timezone>
+      <roles>
+        <role>project initiator</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>lkwg82ATis24</id>
+      <name>Lars Gohlke (@is24)</name>
+      <timezone>+1</timezone>
+      <organization>Immobilienscout24</organization>
+      <organizationUrl>http://www.immobilienscout24.de</organizationUrl>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>3.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
