@@ -5,4 +5,4 @@ set -o nounset
 set -o pipefail
 
 # for debugging
-set -o xtrace
+#set -o xtrace
