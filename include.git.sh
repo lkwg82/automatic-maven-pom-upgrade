@@ -57,9 +57,27 @@ function git_merge_updates_from_master {
         echo "not on a \"${__git_tag_prefix}_*\" branch"
         exit 1
     fi
-    git merge --no-ff master --commit --message "updates from master"
+    echo -n "merging updates from master ... "
+    git merge --no-ff master --commit --message "updates from master" >> debug.log && echo "done" \
+        || git merge --abort && echo "conflict"
 }
 
+# argument: branch to merge grom
+function git_check_for_conflicting_merge {
+    assertOneArg $@
+    echo -n "checking for merge conflict ... "
+    git format-patch $1 --stdout | git apply --check - >> debug.log 2>&1 && echo ok || echo conflict
+}
+
+function git_try_committing_changes {
+    echo "check for committable changes"
+    if [ -f "commit.msg" ]; then
+        git diff pom.xml > diff.log
+        echo -n "committing ... "
+        git commit --file commit.msg pom.xml >> debug.log 2>&1 && echo ok && return 0 \
+            || echo fail && exit 1
+    fi
+}
 # proceed when executed directly
 if [ $(basename $0) == "include.git.sh" ]; then
   set -x
