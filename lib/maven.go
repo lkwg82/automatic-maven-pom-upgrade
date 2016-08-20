@@ -1,12 +1,12 @@
 package lib
 
 import (
-	"os"
-	"log"
-	"os/exec"
-	"fmt"
 	"bufio"
+	"fmt"
 	"io"
+	"log"
+	"os"
+	"os/exec"
 )
 
 var (
@@ -26,7 +26,7 @@ func init() {
 
 func NewMaven(logfile *os.File) (m *Maven, err error) {
 	m = &Maven{
-		log:bufio.NewWriter(logfile),
+		log: bufio.NewWriter(logfile),
 	}
 	m.command, err = m.determineCommand()
 	return m, err

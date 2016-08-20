@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"log"
+	"os"
 )
 
 func init() {
@@ -11,9 +11,5 @@ func init() {
 }
 
 func main() {
-	log.Print("test")
-	log.Print("test")
-	log.Print("test")
-	log.Print("test")
 	log.Print("test")
 }

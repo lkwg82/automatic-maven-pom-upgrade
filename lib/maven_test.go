@@ -1,14 +1,14 @@
 package lib
 
 import (
-	"testing"
-	"os"
-	"io/ioutil"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
+	"os"
+	"testing"
 )
 
 var (
-	cwd string
+	cwd           string
 	testDirectory string
 )
 
