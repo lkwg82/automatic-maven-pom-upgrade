@@ -9,15 +9,7 @@ echo
 echo " ---- RUN ---- "
 echo
 
-set +e
-echo running build
-./build.sh || echo "ERROR"
-
-echo "executing"
-set -x
-./bin/upgrade || echo "ERROR"
-set +x
-set -e
+./build.sh && ./bin/upgrade
 
 # self restarting
 exec $0

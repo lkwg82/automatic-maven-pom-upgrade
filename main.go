@@ -21,8 +21,6 @@ func init() {
 
 func main() {
 	parseParameter()
-
-	log.Print("test")
 }
 
 func parseParameter() {

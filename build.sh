@@ -3,12 +3,15 @@
 set -e
 #set -x
 
+mkdir -p logs
+
 go get github.com/droundy/goopt
 go get github.com/stretchr/testify/assert
 
-go build main.go
+echo " run tests"
+go test ./... > logs/test.log && rm logs/test.log || bash -c 'cat logs/test.log && exit 1'
 #go fmt ./...
-go test ./...
 
 mkdir -p bin
-go build -o bin/upgrade main.go
+echo " building"
+go build -o bin/upgrade main.go > logs/build.log && rm logs/build.log || bash -c 'cat logs/build.log && exit 1'
