@@ -5,6 +5,7 @@ import (
 	"github.com/droundy/goopt"
 	"log"
 	"os"
+	. "github.com/lkwg82/automatic-maven-pom-upgrade/lib"
 )
 
 var optVerbose = goopt.Flag([]string{
@@ -21,6 +22,16 @@ func init() {
 
 func main() {
 	parseParameter()
+
+	if *optType == "parent" {
+		file, _ := os.Create("maven.log")
+
+		maven, err := NewMaven(file)
+		if err != nil {
+			log.Fatalf("failed to initialize maven")
+		}
+		maven.UpdateParent()
+	}
 }
 
 func parseParameter() {
