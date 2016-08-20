@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 	"github.com/rafecolton/go-fileutils"
-	"log"
 	"path"
+	"strings"
 )
 
 var (
@@ -103,21 +103,21 @@ func TestMavenWrapperFound(t *testing.T) {
 	assert.Equal(t, logContent, "x")
 }
 
+func copyTestProjectToTestDirectory(testProjectName string) {
+	sourcePath := path.Dir(cwd + "/../test-projects/" + testProjectName)
+	if err := fileutils.CpR(sourcePath, "x"); err != nil {
+		panic(err)
+	}
+	if err := os.Chdir("x/" + testProjectName); err != nil {
+		panic(err)
+	}
+}
+
 func TestMavenParentPomUpdate(t *testing.T) {
 	changeToTestDir()
 	defer cleanup()
 
-	log.Print(testDirectory)
-	sourcePath := path.Dir(cwd + "/../test-projects/simple-parent-update")
-	projectDir := "simple-parent-update"
-	if err := fileutils.CpR(sourcePath, "x"); err != nil {
-		panic(err)
-	}
-	if err := os.Chdir(testDirectory + "/x/" + projectDir); err != nil {
-		panic(err)
-	}
-	x, _ := os.Getwd()
-	log.Print("cwd: " + projectDir + " " + x)
+	copyTestProjectToTestDirectory("simple-parent-update")
 
 	file, _ := os.Create("maven.log")
 
@@ -125,6 +125,25 @@ func TestMavenParentPomUpdate(t *testing.T) {
 	maven, _ := NewMaven(file)
 	maven.UpdateParent()
 
+	var updateMessage string
+	errors := make([]string, 0)
 	logContent, _ := readFile("maven.log")
-	log.Print(logContent)
+	lines := strings.Split(logContent, "\n")
+	for _, line := range lines {
+		updateToken := "[INFO] Updating parent from "
+		if strings.HasPrefix(line, updateToken) {
+			updateMessage = line
+		} else {
+			warnToken := "[WARNING]"
+			errorToken := "[ERROR]"
+			if strings.HasPrefix(line, warnToken) || strings.HasPrefix(line, errorToken) {
+				errors=append(errors, line)
+			}
+		}
+	}
+
+
+	assert.Empty(t, errors)
+	assert.NotZero(t, updateMessage)
+	assert.True(t, strings.HasPrefix(updateMessage, "[INFO] Updating parent from 1.3.7.RELEASE to "))
 }
