@@ -28,7 +28,7 @@ func main() {
 
 		maven, err := NewMaven(file)
 		if err != nil {
-			log.Fatalf("failed to initialize maven")
+			log.Fatalf("failed to initialize maven: %s",  err)
 		}
 		maven.UpdateParent()
 	}
