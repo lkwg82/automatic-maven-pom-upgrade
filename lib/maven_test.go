@@ -94,9 +94,26 @@ func TestMavenWrapperFound(t *testing.T) {
 	// action
 	maven, _ := NewMaven(file)
 
-	bytes, _ := ioutil.ReadFile("maven.log")
-	n := len(bytes)
-	logContent := string(bytes[:n])
+	logContent, _ := readFile("maven.log")
+
+	assert.Equal(t, maven.command, "mvn")
+	assert.Equal(t, logContent, "x")
+}
+
+func TestMavenParentPomUpdate(t *testing.T) {
+	changeToTestDir()
+	defer cleanup()
+
+	os.Setenv("PATH", ".")
+
+	content := "#!/bin/sh\necho -n x"
+	ioutil.WriteFile("mvn", []byte(content), 0700)
+	file, _ := os.Create("maven.log")
+
+	// action
+	maven, _ := NewMaven(file)
+
+	logContent, _ := readFile("maven.log")
 
 	assert.Equal(t, maven.command, "mvn")
 	assert.Equal(t, logContent, "x")
