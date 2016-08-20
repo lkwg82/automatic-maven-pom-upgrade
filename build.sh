@@ -10,7 +10,8 @@ go get github.com/rafecolton/go-fileutils
 go get github.com/stretchr/testify/assert
 
 echo " run tests"
-go test ./... > logs/test.log && rm logs/test.log || bash -c 'cat logs/test.log && exit 1'
+go test ./...
+#> logs/test.log && rm logs/test.log || bash -c 'cat logs/test.log && exit 1'
 #go fmt ./...
 
 mkdir -p bin
