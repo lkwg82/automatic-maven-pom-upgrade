@@ -8,6 +8,7 @@ import (
 	"github.com/rafecolton/go-fileutils"
 	"path"
 	"strings"
+	"log"
 )
 
 var (
@@ -117,6 +118,7 @@ func setupWithTestProject(testProjectName string) (*Maven) {
 
 	maven, err := NewMaven(logFile)
 	if err != nil {
+		log.Print(readFile(logFile.Name()))
 		panic(err)
 	}
 
