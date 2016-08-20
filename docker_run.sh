@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -e
 
 cid=$(docker build . | tail -n1 | cut -d\  -f3)
 
