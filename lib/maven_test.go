@@ -5,10 +5,13 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"github.com/rafecolton/go-fileutils"
+	"log"
+	"path"
 )
 
 var (
-	cwd           string
+	cwd string
 	testDirectory string
 )
 
@@ -104,17 +107,24 @@ func TestMavenParentPomUpdate(t *testing.T) {
 	changeToTestDir()
 	defer cleanup()
 
-	os.Setenv("PATH", ".")
+	log.Print(testDirectory)
+	sourcePath := path.Dir(cwd + "/../test-projects/simple-parent-update")
+	projectDir := "simple-parent-update"
+	if err := fileutils.CpR(sourcePath, "x"); err != nil {
+		panic(err)
+	}
+	if err := os.Chdir(testDirectory + "/x/" + projectDir); err != nil {
+		panic(err)
+	}
+	x, _ := os.Getwd()
+	log.Print("cwd: " + projectDir + " " + x)
 
-	content := "#!/bin/sh\necho -n x"
-	ioutil.WriteFile("mvn", []byte(content), 0700)
 	file, _ := os.Create("maven.log")
 
 	// action
 	maven, _ := NewMaven(file)
+	maven.UpdateParent()
 
 	logContent, _ := readFile("maven.log")
-
-	assert.Equal(t, maven.command, "mvn")
-	assert.Equal(t, logContent, "x")
+	log.Print(logContent)
 }
