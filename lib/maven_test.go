@@ -13,6 +13,7 @@ import (
 var (
 	cwd string
 	testDirectory string
+	logFile *os.File
 )
 
 func init() {
@@ -23,7 +24,7 @@ func init() {
 	}
 }
 
-func changeToTestDir() {
+func setup() {
 	if len(testDirectory) > 0 {
 		panic("testDirectory is already set: " + testDirectory)
 	}
@@ -60,7 +61,7 @@ func cleanup() {
 }
 
 func TestDetectionOfMavenWrapper(t *testing.T) {
-	changeToTestDir()
+	setup()
 	defer cleanup()
 
 	content := "#!/bin/sh\necho -n x"
@@ -73,7 +74,7 @@ func TestDetectionOfMavenWrapper(t *testing.T) {
 }
 
 func TestMavenNotFound(t *testing.T) {
-	changeToTestDir()
+	setup()
 	defer cleanup()
 
 	os.Setenv("PATH", "")
@@ -85,7 +86,7 @@ func TestMavenNotFound(t *testing.T) {
 }
 
 func TestMavenWrapperFound(t *testing.T) {
-	changeToTestDir()
+	setup()
 	defer cleanup()
 
 	os.Setenv("PATH", ".")
@@ -103,7 +104,8 @@ func TestMavenWrapperFound(t *testing.T) {
 	assert.Equal(t, logContent, "x")
 }
 
-func copyTestProjectToTestDirectory(testProjectName string) {
+func setupWithTestProject(testProjectName string) (*Maven) {
+	setup()
 	sourcePath := path.Dir(cwd + "/../test-projects/" + testProjectName)
 	if err := fileutils.CpR(sourcePath, "x"); err != nil {
 		panic(err)
@@ -111,39 +113,24 @@ func copyTestProjectToTestDirectory(testProjectName string) {
 	if err := os.Chdir("x/" + testProjectName); err != nil {
 		panic(err)
 	}
+	logFile, _ = os.Create("maven.log")
+
+	maven, err := NewMaven(logFile)
+	if err != nil {
+		panic(err)
+	}
+
+	return maven
 }
 
 func TestMavenParentPomUpdate(t *testing.T) {
-	changeToTestDir()
+	maven := setupWithTestProject("simple-parent-update")
 	defer cleanup()
 
-	copyTestProjectToTestDirectory("simple-parent-update")
-
-	file, _ := os.Create("maven.log")
-
 	// action
-	maven, _ := NewMaven(file)
-	maven.UpdateParent()
+	updateMessage, err := maven.UpdateParent()
 
-	var updateMessage string
-	errors := make([]string, 0)
-	logContent, _ := readFile("maven.log")
-	lines := strings.Split(logContent, "\n")
-	for _, line := range lines {
-		updateToken := "[INFO] Updating parent from "
-		if strings.HasPrefix(line, updateToken) {
-			updateMessage = line
-		} else {
-			warnToken := "[WARNING]"
-			errorToken := "[ERROR]"
-			if strings.HasPrefix(line, warnToken) || strings.HasPrefix(line, errorToken) {
-				errors=append(errors, line)
-			}
-		}
-	}
-
-
-	assert.Empty(t, errors)
+	assert.Nil(t, err)
 	assert.NotZero(t, updateMessage)
-	assert.True(t, strings.HasPrefix(updateMessage, "[INFO] Updating parent from 1.3.7.RELEASE to "))
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
 }

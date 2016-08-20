@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 const plugin_version = "2.3"
@@ -64,12 +65,25 @@ func execCommand(log *bufio.Writer, command string, arg ...string) (error) {
 	return execCommand.Run()
 }
 
-func (m *Maven) UpdateParent() {
+func (m *Maven) UpdateParent() (string, error) {
 	log.Print("updating parent")
-	err := execCommand(m.log, m.command, []string{plugin +":update-parent", "-DgenerateBackupPoms=false"}...)
+	err := execCommand(m.log, m.command, []string{plugin + ":update-parent", "-DgenerateBackupPoms=false"}...)
+
 	if err != nil {
-		content, _ := readFile(m.logFile.Name())
-		log.Print(content)
+		log.Fatalf("something failed: %s", err)
+		return "", err
+	}
+	content, err := readFile(m.logFile.Name())
+	if err!=nil{
+		panic(err)
 	}
 
+	lines := strings.Split(content, "\n")
+	for _, line := range lines {
+		updateToken := "[INFO] Updating parent from "
+		if strings.HasPrefix(line, updateToken) {
+			return line[7:], err
+		}
+	}
+	panic("missed the line with the message : " + content)
 }
