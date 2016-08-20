@@ -3,4 +3,5 @@
 set -e
 
 go test ./...
-go build -o upgrade main.go
+mkdir -p bin
+go build -o bin/upgrade main.go
