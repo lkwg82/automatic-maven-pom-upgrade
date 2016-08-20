@@ -5,6 +5,6 @@ go:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y default-jre
+  - sudo apt-get install -y default-jre coreutils
 
 script: ./build.sh
