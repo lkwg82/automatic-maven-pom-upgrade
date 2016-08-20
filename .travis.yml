@@ -1,14 +1,5 @@
-language: go
-
-go:
-  - 1.6
-
 sudo: required
-dist: trusty
+services:
+  - docker
 
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y default-jdk coreutils
-  - java -version
-
-script: ./build.sh
+script: ./docker_run.sh
