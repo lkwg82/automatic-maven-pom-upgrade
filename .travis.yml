@@ -2,4 +2,4 @@ sudo: required
 services:
   - docker
 
-script: ./docker_run.sh
+script: docker/docker_run.sh

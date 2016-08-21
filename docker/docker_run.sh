@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-cid=$(docker build . | tail -n1 | cut -d\  -f3)
+cid=$(docker build docker | tail -n1 | cut -d\  -f3)
 
 project=src/github.com/lkwg82/automatic-maven-pom-upgrade
 
