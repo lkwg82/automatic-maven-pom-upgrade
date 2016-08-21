@@ -5,4 +5,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		coreutils \
 		&& rm -rf /var/lib/apt/lists/*
 
-CMD "./run_in_docker.sh"
+CMD "docker/run_in_docker.sh"
