@@ -23,15 +23,27 @@ func init() {
 func main() {
 	parseParameter()
 
-	if *optType == "parent" {
-		file, _ := os.Create("maven.log")
+	gitLog, _ := os.Create("git.log")
 
-		maven, err := NewMaven(file)
-		if err != nil {
-			log.Fatalf("failed to initialize maven: %s",  err)
-		}
-		maven.UpdateParent()
+	git, err := NewGit(gitLog)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	if *optType == "parent" {
+		mavenLog, _ := os.Create("maven.log")
+
+		maven, err := NewMaven(mavenLog)
+		if err != nil {
+			log.Fatalf("failed to initialize maven: %s", err)
+		}
+
+		if message, err := maven.UpdateParent(); err != nil {
+			git.CommitMessage = message
+		}
+	}
+
+	git.Commit()
 }
 
 func parseParameter() {

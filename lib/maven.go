@@ -3,30 +3,21 @@ package lib
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 )
 
 const plugin_version = "2.3"
 
 var (
-	maven_command string
 	plugin = fmt.Sprintf("org.codehaus.mojo:versions-maven-plugin:%s", plugin_version)
 )
 
 type Maven struct {
-	log     *bufio.Writer
-	logFile *os.File
-	command string
-}
-
-func init() {
-	log.SetOutput(os.Stdout)
-	log.SetFlags(log.Lshortfile | log.Ltime)
-
+	log           *bufio.Writer
+	logFile       *os.File
+	command       string
 }
 
 func NewMaven(logfile *os.File) (m *Maven, err error) {
@@ -54,17 +45,6 @@ func (m *Maven) determineCommand() (cmd string, err error) {
 	return cmd, err
 }
 
-func execCommand(log *bufio.Writer, command string, arg ...string) (error) {
-	execCommand := exec.Command(command, arg...)
-	stdout, _ := execCommand.StdoutPipe()
-	stderr, _ := execCommand.StderrPipe()
-	go io.Copy(log, stdout)
-	go io.Copy(log, stderr)
-
-	defer log.Flush()
-	return execCommand.Run()
-}
-
 func (m *Maven) UpdateParent() (string, error) {
 	log.Print("updating parent")
 	err := execCommand(m.log, m.command, []string{plugin + ":update-parent", "-DgenerateBackupPoms=false"}...)
@@ -74,7 +54,7 @@ func (m *Maven) UpdateParent() (string, error) {
 		return "", err
 	}
 	content, err := readFile(m.logFile.Name())
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
 
