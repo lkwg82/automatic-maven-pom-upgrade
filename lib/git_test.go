@@ -66,7 +66,7 @@ func TestGit_BranchExists(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	execCmd("git", []string{"init"})
+	createRepoWithSingleCommit()
 
 	file, _ := os.Create("git.log")
 	os.Remove("git.log")
@@ -78,38 +78,45 @@ func TestGit_BranchExists(t *testing.T) {
 	assert.True(t, git.BranchExists("test"))
 }
 
-//func TestGit_BranchCheckoutNew(t *testing.T) {
-//	setup()
-//	defer cleanup()
-//
-//	execCmd("git", []string{"init"})
-//	os.Create("test")
-//	execCmd("git", []string{"add", "test"})
-//	execCmd("git", []string{"commit", "-m", "'test'", "test"})
-//
-//	file, _ := os.Create("git.log")
-//	os.Remove("git.log")
-//	git, err := NewGit(file)
-//
-//	git.BranchCheckout("test")
-//
-//	assert.Nil(t, err)
-//	assert.True(t, git.BranchExists("test"))
-//	assert.Equal(t, git.BranchCurrent(), "test")
-//}
+func TestGit_BranchCheckoutNew(t *testing.T) {
+	setup()
+	defer cleanup()
 
-//func TestGit_BranchCheckoutExisting(t *testing.T) {
-//	setup()
-//	defer cleanup()
-//
-//	execCmd("git", []string{"init"})
-//
-//	file, _ := os.Create("git.log")
-//	os.Remove("git.log")
-//	git, err := NewGit(file)
-//
-//	execCmd("git", []string{"checkout", "-b", "test"})
-//
-//	assert.Nil(t, err)
-//	assert.True(t, git.BranchExists("test"))
-//}
+	createRepoWithSingleCommit()
+
+	file, _ := os.Create("git.log")
+	os.Remove("git.log")
+	git, err := NewGit(file)
+
+	git.BranchCheckoutNew("test")
+
+	assert.Nil(t, err)
+	assert.True(t, git.BranchExists("test"), "missing branch test")
+	assert.Equal(t, git.BranchCurrent(), "test")
+}
+
+func createRepoWithSingleCommit() {
+	execCmd("git", []string{"init"})
+	os.Create("test")
+	execCmd("git", []string{"add", "test"})
+	execCmd("git", []string{"commit", "-m", "'test'", "test"})
+}
+
+func TestGit_BranchCheckoutExisting(t *testing.T) {
+	setup()
+	defer cleanup()
+
+	createRepoWithSingleCommit()
+	execCmd("git", []string{"checkout", "-b", "test"})
+	execCmd("git", []string{"checkout", "master"})
+
+	file, _ := os.Create("git.log")
+	os.Remove("git.log")
+	git, err := NewGit(file)
+
+	git.BranchCheckoutExisting("test")
+
+	assert.Nil(t, err)
+	assert.True(t, git.BranchExists("test"), "missing branch test")
+	assert.Equal(t, git.BranchCurrent(), "test")
+}

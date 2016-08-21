@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/droundy/goopt"
+	. "github.com/lkwg82/automatic-maven-pom-upgrade/lib"
 	"log"
 	"os"
-	. "github.com/lkwg82/automatic-maven-pom-upgrade/lib"
 )
 
 var optVerbose = goopt.Flag([]string{

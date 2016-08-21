@@ -1,14 +1,14 @@
 package lib
 
 import (
+	"github.com/rafecolton/go-fileutils"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"log"
 	"os"
-	"testing"
-	"github.com/rafecolton/go-fileutils"
 	"path"
 	"strings"
-	"log"
+	"testing"
 )
 
 func TestDetectionOfMavenWrapper(t *testing.T) {
@@ -55,7 +55,7 @@ func TestMavenWrapperFound(t *testing.T) {
 	assert.Equal(t, logContent, "x")
 }
 
-func setupWithTestProject(testProjectName string) (*Maven) {
+func setupWithTestProject(testProjectName string) *Maven {
 	setup()
 	sourcePath := path.Dir(temporaryDirectoryForTests.Cwd + "/../test-projects/" + testProjectName)
 	if err := fileutils.CpR(sourcePath, "x"); err != nil {
@@ -84,5 +84,5 @@ func TestMavenParentPomUpdate(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotZero(t, updateMessage)
-	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : "+updateMessage)
 }

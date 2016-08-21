@@ -2,13 +2,11 @@ package lib
 
 import (
 	"bufio"
-	"os"
-	"strings"
-	"os/exec"
 	"log"
+	"os"
+	"os/exec"
+	"strings"
 )
-
-const PREFIX = "autoupdate"
 
 type Git struct {
 	log           *bufio.Writer
@@ -19,8 +17,8 @@ type Git struct {
 
 func NewGit(logfile *os.File) (g *Git, err error) {
 	g = &Git{
-		log: bufio.NewWriter(logfile),
-		logFile:logfile,
+		log:     bufio.NewWriter(logfile),
+		logFile: logfile,
 		command: "git",
 	}
 
@@ -48,8 +46,7 @@ func (g *Git) checkInstalled() error {
 }
 
 func (g *Git) BranchExists(branch string) bool {
-	internalName := PREFIX + "_" + branch
-	args := []string{"branch", "--list", internalName}
+	args := []string{"branch", "--list", branch}
 	output, err := exec.Command(g.command, args...).Output()
 
 	if err != nil {
@@ -57,10 +54,8 @@ func (g *Git) BranchExists(branch string) bool {
 	}
 
 	n := len(output)
-	content := string(output[:n])
-	log.Println("out" + content)
-	lines := strings.Split(content, "\n")
-	return len(lines) == 1
+	lines := strings.Split(string(output[:n]), "\n")
+	return lines[0] == "* "+branch
 }
 
 func (g *Git) IsDirty() (bool, error) {
@@ -89,11 +84,12 @@ func (g *Git) BranchCurrent() string {
 	return strings.Replace(lines[0], "refs/heads/", "", 0)
 }
 
-func (g *Git) BranchCheckout(branch string) {
-	if g.BranchExists(branch) {
-		g.exec("checkout " + PREFIX + "_" + branch)
-	}
-	g.exec("checkout -b " + PREFIX + "_" + branch)
+func (g *Git) BranchCheckoutExisting(branch string) {
+	g.exec("checkout " + branch)
+}
+
+func (g *Git) BranchCheckoutNew(branch string) {
+	g.exec("checkout -b " + branch)
 }
 
 func (g *Git) Commit() {

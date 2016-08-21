@@ -15,15 +15,15 @@ var (
 )
 
 type Maven struct {
-	log           *bufio.Writer
-	logFile       *os.File
-	command       string
+	log     *bufio.Writer
+	logFile *os.File
+	command string
 }
 
 func NewMaven(logfile *os.File) (m *Maven, err error) {
 	m = &Maven{
-		log: bufio.NewWriter(logfile),
-		logFile:logfile,
+		log:     bufio.NewWriter(logfile),
+		logFile: logfile,
 	}
 	m.command, err = m.determineCommand()
 	return m, err
