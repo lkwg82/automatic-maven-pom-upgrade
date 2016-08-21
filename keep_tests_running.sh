@@ -19,9 +19,16 @@ echo " ---- RUN ---- "
 echo
 
 mkdir -p test
-./build.sh && pushd test && ../bin/upgrade
 
-popd
+executeProgramm() {
+    pushd test && ../bin/upgrade
+    popd
+}
+
+set +e
+./build.sh && executeProgramm
+set -e
+
 
 # self restarting
 exec $0
