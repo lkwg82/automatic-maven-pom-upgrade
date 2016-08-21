@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"os/exec"
-	"errors"
 	"log"
 )
 
@@ -27,20 +26,20 @@ func NewGit(logfile *os.File) (g *Git, err error) {
 
 	err = g.checkInstalled()
 	if err != nil {
-		return
+		return g, NewWrapError(err, "git not installed")
 	}
 
 	if _, err := os.Stat(".git"); os.IsNotExist(err) {
-		return g, errors.New("missing git repository")
+		return g, NewWrapError2("missing git repository")
 	}
 
-	if status, err := g.IsDirty(); err != nil || !status {
-		if ( !status) {
-			return g, errors.New("repository is dirty")
-		}
-		return g, err
+	status, err := g.IsDirty()
+	if err != nil {
+		return g, NewWrapError(err, "unexpected error")
 	}
-
+	if !status {
+		return g, NewWrapError2("repository is dirty")
+	}
 	return g, err
 }
 
@@ -49,7 +48,8 @@ func (g *Git) checkInstalled() error {
 }
 
 func (g *Git) BranchExists(branch string) bool {
-	args := []string{"branch", "--list", PREFIX + "_" + branch}
+	internalName := PREFIX + "_" + branch
+	args := []string{"branch", "--list", internalName}
 	output, err := exec.Command(g.command, args...).Output()
 
 	if err != nil {
@@ -57,12 +57,14 @@ func (g *Git) BranchExists(branch string) bool {
 	}
 
 	n := len(output)
-	lines := strings.Split(string(output[:n]), "\n")
+	content := string(output[:n])
+	log.Println("out" + content)
+	lines := strings.Split(content, "\n")
 	return len(lines) == 1
 }
 
 func (g *Git) IsDirty() (bool, error) {
-	args := []string{"status", "--procelain"}
+	args := []string{"status", "--porcelain"}
 	output, err := exec.Command(g.command, args...).Output()
 
 	if err != nil {
@@ -71,14 +73,27 @@ func (g *Git) IsDirty() (bool, error) {
 
 	n := len(output)
 	lines := strings.Split(string(output[:n]), "\n")
-	return len(lines) == 0, err
+	// empty line has at least one
+	return len(lines) == 1, err
+}
+
+func (g *Git) BranchCurrent() string {
+	args := []string{"symbolic-ref", "--short", "HEAD"}
+	output, err := exec.Command(g.command, args...).Output()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	n := len(output)
+	lines := strings.Split(string(output[:n]), "\n")
+	return strings.Replace(lines[0], "refs/heads/", "", 0)
 }
 
 func (g *Git) BranchCheckout(branch string) {
 	if g.BranchExists(branch) {
-		g.exec("checkout " + branch)
+		g.exec("checkout " + PREFIX + "_" + branch)
 	}
-	g.exec("checkout -b " + branch)
+	g.exec("checkout -b " + PREFIX + "_" + branch)
 }
 
 func (g *Git) Commit() {

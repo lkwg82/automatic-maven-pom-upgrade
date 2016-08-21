@@ -11,56 +11,6 @@ import (
 	"log"
 )
 
-var (
-	cwd string
-	testDirectory string
-	logFile *os.File
-)
-
-func init() {
-	var err error
-	cwd, err = os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-}
-
-func setup() {
-	if len(testDirectory) > 0 {
-		panic("testDirectory is already set: " + testDirectory)
-	}
-
-	path, err := ioutil.TempDir("", "x")
-	if err != nil {
-		panic(err)
-	}
-
-	if err := os.MkdirAll(path, 0655); err != nil {
-		panic(err)
-	}
-
-	if err := os.Chdir(path); err != nil {
-		panic(err)
-	}
-	testDirectory = path
-}
-
-func cleanup() {
-	if _cwd, err := os.Getwd(); err != nil {
-		panic(err)
-	} else {
-		if len(testDirectory) > 0 && _cwd != cwd {
-			if err := os.Chdir(cwd); err != nil {
-				panic(err)
-			}
-			if err := os.RemoveAll(testDirectory); err != nil {
-				panic(err)
-			}
-			testDirectory = ""
-		}
-	}
-}
-
 func TestDetectionOfMavenWrapper(t *testing.T) {
 	setup()
 	defer cleanup()
@@ -107,14 +57,14 @@ func TestMavenWrapperFound(t *testing.T) {
 
 func setupWithTestProject(testProjectName string) (*Maven) {
 	setup()
-	sourcePath := path.Dir(cwd + "/../test-projects/" + testProjectName)
+	sourcePath := path.Dir(temporaryDirectoryForTests.Cwd + "/../test-projects/" + testProjectName)
 	if err := fileutils.CpR(sourcePath, "x"); err != nil {
 		panic(err)
 	}
 	if err := os.Chdir("x/" + testProjectName); err != nil {
 		panic(err)
 	}
-	logFile, _ = os.Create("maven.log")
+	logFile, _ := os.Create("maven.log")
 
 	maven, err := NewMaven(logFile)
 	if err != nil {
