@@ -43,15 +43,16 @@ func TestMavenWrapperFound(t *testing.T) {
 	os.Setenv("PATH", ".")
 
 	content := "#!/bin/sh\necho -n x"
-	ioutil.WriteFile("mvn", []byte(content), 0700)
+	ioutil.WriteFile("mvnw", []byte(content), 0700)
 	file, _ := os.Create("maven.log")
 
 	// action
-	maven, _ := NewMaven(file)
+	maven, err := NewMaven(file)
 
 	logContent, _ := readFile("maven.log")
 
-	assert.Equal(t, maven.command, "mvn")
+	assert.Nil(t, err)
+	assert.Equal(t, maven.command, "./mvnw")
 	assert.Equal(t, logContent, "x")
 }
 
@@ -84,5 +85,5 @@ func TestMavenParentPomUpdate(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotZero(t, updateMessage)
-	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : "+updateMessage)
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
 }
