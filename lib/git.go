@@ -59,8 +59,8 @@ func (g *Git) IsDirty() bool {
 	n := len(output)
 	lines := strings.Split(string(output[:n]), "\n")
 
-	// empty line has at least one
-	return len(lines) == 1
+	// empty line has at least one line
+	return len(lines) > 0
 }
 
 func (g *Git) BranchCurrent() string {

@@ -4,17 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
-	"flag"
 )
-
-func TestMain(m *testing.M) {
-	flag.Parse()
-
-	execCmd("git", []string{"config", "--global", "user.email", "test@ci.com"})
-	execCmd("git", []string{"config", "--global", "user.name", "test"})
-
-	os.Exit(m.Run())
-}
 
 func TestDetectionGitNotInstalled(t *testing.T) {
 	setup()
@@ -105,6 +95,10 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 
 func createRepoWithSingleCommit() {
 	execCmd("git", []string{"init"})
+
+	execCmd("git", []string{"config", "user.email", "test@ci.com"})
+	execCmd("git", []string{"config", "user.name", "test"})
+
 	os.Create("test")
 	execCmd("git", []string{"add", "test"})
 	execCmd("git", []string{"commit", "-m", "'test'", "test"})
