@@ -6,12 +6,24 @@ import (
 	"io"
 	"io/ioutil"
 	"os/exec"
+	"strings"
 )
 
 func readFile(pathname string) (string, error) {
 	bytes, err := ioutil.ReadFile(pathname)
 	n := len(bytes)
 	return string(bytes[:n]), err
+}
+
+func execCommand2(log *bufio.Writer, cmdline string) error {
+	parts := strings.Split(cmdline, " ")
+	validArgs := make([]string, 0)
+	for _, p := range parts {
+		if p != "" {
+			validArgs = append(validArgs, p)
+		}
+	}
+	return execCommand(log, validArgs[0], validArgs[1:]...)
 }
 
 func execCommand(log *bufio.Writer, command string, arg ...string) error {

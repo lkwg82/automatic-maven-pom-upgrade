@@ -15,7 +15,7 @@ type Git struct {
 	CommitMessage string
 }
 
-func NewGit(logfile *os.File) (g *Git) {
+func NewGit(logfile *os.File) *Git {
 	return &Git{
 		log:     bufio.NewWriter(logfile),
 		logFile: logfile,
@@ -92,14 +92,7 @@ func (g *Git) Commit() {
 }
 
 func (g *Git) exec(arguments string) {
-	parts := strings.Split(arguments, " ")
-	validArgs := make([]string, 0)
-	for _, p := range parts {
-		if p != "" {
-			validArgs = append(validArgs, p)
-		}
-	}
-	err := execCommand(g.log, g.command, validArgs...)
+	err := execCommand2(g.log, g.command + " " + arguments)
 	if err != nil {
 		log.Panic(err)
 	}
