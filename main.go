@@ -25,10 +25,11 @@ func main() {
 
 	gitLog, _ := os.Create("git.log")
 
-	git, err := NewGit(gitLog)
-	if err != nil {
-		log.Fatal(err)
-	}
+	git := NewGit(gitLog)
+
+	assert(git.IsInstalled(), "need git to be installed or in the PATH")
+	assert(git.HasRepo(), "need called from a directory, which has a repository")
+	assert(!git.IsDirty(), "repository is dirty, plz commit or reset")
 
 	if *optType == "parent" {
 		mavenLog, _ := os.Create("maven.log")
@@ -44,6 +45,12 @@ func main() {
 	}
 
 	git.Commit()
+}
+
+func assert(status bool, hint string) {
+	if (!status) {
+		log.Fatal("ERROR: " + hint)
+	}
 }
 
 func parseParameter() {

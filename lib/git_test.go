@@ -4,7 +4,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"flag"
 )
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+
+	execCmd("git", []string{"config", "--global", "user.email", "test@ci.com"})
+	execCmd("git", []string{"config", "--global", "user.name", "test"})
+
+	os.Exit(m.Run())
+}
 
 func TestDetectionGitNotInstalled(t *testing.T) {
 	setup()
@@ -15,9 +25,9 @@ func TestDetectionGitNotInstalled(t *testing.T) {
 	os.Setenv("PATH", ".")
 
 	file, _ := os.Create("git.log")
-	_, err := NewGit(file)
+	g := NewGit(file)
 
-	assert.Equal(t, err.(*WrapError).string(), "git not installed")
+	assert.False(t, g.IsInstalled())
 }
 
 func TestDetectionOfMissingGitDirectory(t *testing.T) {
@@ -25,9 +35,9 @@ func TestDetectionOfMissingGitDirectory(t *testing.T) {
 	defer cleanup()
 
 	file, _ := os.Create("git.log")
-	_, err := NewGit(file)
+	g := NewGit(file)
 
-	assert.Equal(t, err.(*WrapError).string(), "missing git repository")
+	assert.False(t, g.HasRepo())
 }
 
 func TestDetectionOfNonDirtyGitRepository(t *testing.T) {
@@ -40,9 +50,9 @@ func TestDetectionOfNonDirtyGitRepository(t *testing.T) {
 	// need to removed
 	os.Remove("git.log")
 
-	_, err := NewGit(file)
+	g := NewGit(file)
 
-	assert.Nil(t, err)
+	assert.True(t, g.IsDirty())
 }
 
 func TestDetectionOfDirtyGitRepository(t *testing.T) {
@@ -57,9 +67,9 @@ func TestDetectionOfDirtyGitRepository(t *testing.T) {
 	}
 
 	file, _ := os.Create("git.log")
-	_, err = NewGit(file)
+	g := NewGit(file)
 
-	assert.Equal(t, err.(*WrapError).string(), "repository is dirty")
+	assert.True(t, g.IsDirty())
 }
 
 func TestGit_BranchExists(t *testing.T) {
@@ -70,11 +80,10 @@ func TestGit_BranchExists(t *testing.T) {
 
 	file, _ := os.Create("git.log")
 	os.Remove("git.log")
-	git, err := NewGit(file)
+	git := NewGit(file)
 
 	execCmd("git", []string{"checkout", "-b", "test"})
 
-	assert.Nil(t, err)
 	assert.True(t, git.BranchExists("test"))
 }
 
@@ -86,11 +95,10 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 
 	file, _ := os.Create("git.log")
 	os.Remove("git.log")
-	git, err := NewGit(file)
+	git := NewGit(file)
 
 	git.BranchCheckoutNew("test")
 
-	assert.Nil(t, err)
 	assert.True(t, git.BranchExists("test"), "missing branch test")
 	assert.Equal(t, git.BranchCurrent(), "test")
 }
@@ -112,11 +120,10 @@ func TestGit_BranchCheckoutExisting(t *testing.T) {
 
 	file, _ := os.Create("git.log")
 	os.Remove("git.log")
-	git, err := NewGit(file)
+	git := NewGit(file)
 
 	git.BranchCheckoutExisting("test")
 
-	assert.Nil(t, err)
 	assert.True(t, git.BranchExists("test"), "missing branch test")
 	assert.Equal(t, git.BranchCurrent(), "test")
 }

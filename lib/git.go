@@ -15,34 +15,24 @@ type Git struct {
 	CommitMessage string
 }
 
-func NewGit(logfile *os.File) (g *Git, err error) {
-	g = &Git{
+func NewGit(logfile *os.File) (g *Git) {
+	return &Git{
 		log:     bufio.NewWriter(logfile),
 		logFile: logfile,
 		command: "git",
 	}
-
-	err = g.checkInstalled()
-	if err != nil {
-		return g, NewWrapError(err, "git not installed")
-	}
-
-	if _, err := os.Stat(".git"); os.IsNotExist(err) {
-		return g, NewWrapError2("missing git repository")
-	}
-
-	status, err := g.IsDirty()
-	if err != nil {
-		return g, NewWrapError(err, "unexpected error")
-	}
-	if !status {
-		return g, NewWrapError2("repository is dirty")
-	}
-	return g, err
 }
 
-func (g *Git) checkInstalled() error {
-	return execCommand(g.log, g.command, []string{"--version"}...)
+func (g *Git) HasRepo() bool {
+	if _, err := os.Stat(".git"); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func (g *Git) IsInstalled() bool {
+	err := execCommand(g.log, g.command, []string{"--version"}...)
+	return err == nil
 }
 
 func (g *Git) BranchExists(branch string) bool {
@@ -55,21 +45,22 @@ func (g *Git) BranchExists(branch string) bool {
 
 	n := len(output)
 	lines := strings.Split(string(output[:n]), "\n")
-	return lines[0] == "* "+branch
+	return lines[0] == "* " + branch
 }
 
-func (g *Git) IsDirty() (bool, error) {
+func (g *Git) IsDirty() bool {
 	args := []string{"status", "--porcelain"}
 	output, err := exec.Command(g.command, args...).Output()
 
 	if err != nil {
-		return false, err
+		panic(err)
 	}
 
 	n := len(output)
 	lines := strings.Split(string(output[:n]), "\n")
+
 	// empty line has at least one
-	return len(lines) == 1, err
+	return len(lines) == 1
 }
 
 func (g *Git) BranchCurrent() string {

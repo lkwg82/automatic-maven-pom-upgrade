@@ -5,7 +5,6 @@ import (
 	"github.com/go-errors/errors"
 	"io"
 	"io/ioutil"
-	"os"
 	"os/exec"
 )
 
@@ -19,8 +18,8 @@ func execCommand(log *bufio.Writer, command string, arg ...string) error {
 	execCommand := exec.Command(command, arg...)
 	stdout, _ := execCommand.StdoutPipe()
 	stderr, _ := execCommand.StderrPipe()
-	go io.Copy(os.Stdout, stdout)
-	go io.Copy(os.Stderr, stderr)
+	go io.Copy(log, stdout)
+	go io.Copy(log, stderr)
 
 	defer log.Flush()
 	return execCommand.Run()
