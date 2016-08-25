@@ -24,10 +24,8 @@ func NewGit(logfile *os.File) *Git {
 }
 
 func (g *Git) HasRepo() bool {
-	if _, err := os.Stat(".git"); os.IsNotExist(err) {
-		return false
-	}
-	return true
+	err := execCommand(g.log, g.command, "status")
+	return err == nil
 }
 
 func (g *Git) IsInstalled() bool {
