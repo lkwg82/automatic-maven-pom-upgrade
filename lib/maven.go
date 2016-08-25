@@ -54,7 +54,7 @@ func (m *Maven) DetermineCommand() (err error) {
 
 func (m *Maven) UpdateParent() (string, error) {
 	log.Print("updating parent")
-	err := execCommand(m.log, m.command, []string{plugin + ":update-parent", "-DgenerateBackupPoms=false"}...)
+	err := execCommand(m.log, m.command, []string{plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}...)
 
 	if err != nil {
 		log.Fatalf("something failed: %s", err)
