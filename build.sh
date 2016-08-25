@@ -17,4 +17,4 @@ go test -v ./...
 
 mkdir -p bin
 echo " building"
-go build -ldflags="-s -w" -o bin/upgrade.ldflags main.go > logs/build.log && rm logs/build.log || bash -c 'cat logs/build.log && exit 1'
+go build -ldflags="-s -w" -o bin/upgrade main.go > logs/build.log && rm logs/build.log || bash -c 'cat logs/build.log && exit 1'
