@@ -24,20 +24,17 @@ func main() {
 	parseParameter()
 
 	gitLog, _ := os.Create("git.log")
-
 	git := NewGit(gitLog)
 
 	assert(git.IsInstalled(), "need git to be installed or in the PATH")
 	assert(git.HasRepo(), "need called from a directory, which has a repository")
 	assert(!git.IsDirty(), "repository is dirty, plz commit or reset")
 
-	if *optType == "parent" {
-		mavenLog, _ := os.Create("maven.log")
+	mavenLog, _ := os.Create("maven.log")
+	maven := NewMaven(mavenLog)
+	maven.DetermineCommand()
 
-		maven, err := NewMaven(mavenLog)
-		if err != nil {
-			log.Fatalf("failed to initialize maven: %s", err)
-		}
+	if *optType == "parent" {
 
 		if message, err := maven.UpdateParent(); err != nil {
 			git.CommitMessage = message

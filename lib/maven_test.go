@@ -4,7 +4,6 @@ import (
 	"github.com/rafecolton/go-fileutils"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"strings"
@@ -19,7 +18,8 @@ func TestDetectionOfMavenWrapper(t *testing.T) {
 	ioutil.WriteFile("./mvnw", []byte(content), 0700)
 	file, _ := os.Create("maven.log")
 
-	maven, _ := NewMaven(file)
+	maven := NewMaven(file)
+	maven.DetermineCommand()
 
 	assert.Equal(t, maven.command, "./mvnw")
 }
@@ -31,9 +31,10 @@ func TestMavenNotFound(t *testing.T) {
 	os.Setenv("PATH", "")
 	file, _ := os.Create("maven.log")
 
-	_, err := NewMaven(file)
+	maven := NewMaven(file)
+	maven.DetermineCommand()
 
-	assert.NotNil(t, err, "should raised an error")
+	assert.Fail(t, "should not reach this point")
 }
 
 func TestMavenWrapperFound(t *testing.T) {
@@ -47,11 +48,11 @@ func TestMavenWrapperFound(t *testing.T) {
 	file, _ := os.Create("maven.log")
 
 	// action
-	maven, err := NewMaven(file)
+	maven := NewMaven(file)
+	maven.DetermineCommand()
 
 	logContent, _ := readFile("maven.log")
 
-	assert.Nil(t, err)
 	assert.Equal(t, maven.command, "./mvnw")
 	assert.Equal(t, logContent, "x")
 }
@@ -67,11 +68,8 @@ func setupWithTestProject(testProjectName string) *Maven {
 	}
 	logFile, _ := os.Create("maven.log")
 
-	maven, err := NewMaven(logFile)
-	if err != nil {
-		log.Print(readFile(logFile.Name()))
-		panic(err)
-	}
+	maven := NewMaven(logFile)
+	maven.DetermineCommand()
 
 	return maven
 }

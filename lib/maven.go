@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"os/exec"
 )
 
 const plugin_version = "2.3"
@@ -20,29 +21,34 @@ type Maven struct {
 	command string
 }
 
-func NewMaven(logfile *os.File) (m *Maven, err error) {
-	m = &Maven{
+func NewMaven(logfile *os.File) *Maven {
+	return &Maven{
 		log:     bufio.NewWriter(logfile),
 		logFile: logfile,
 	}
-	m.command, err = m.determineCommand()
-	return m, err
 }
 
-func (m *Maven) determineCommand() (cmd string, err error) {
+func (m *Maven) DetermineCommand() {
+	var cmd string
 	if _, err := os.Stat("mvnw"); err == nil {
 		log.Print("maven wrapper script found")
 		cmd = "./mvnw"
+
+		err := execCommand(m.log, cmd, []string{"--version"}...)
+		if err != nil {
+			log.Fatalf("./mvnw wrapper failed: %s", err)
+		}
 	} else {
 		log.Print("no maven wrapper script found, try mvn from PATH")
 		cmd = "mvn"
+		_, err := exec.LookPath("mvn")
+		if err != nil {
+			log.Fatal("missing mvn command")
+		}
+		m.command = "mvn"
 	}
 
-	err = execCommand(m.log, cmd, []string{"--version"}...)
-	if err != nil {
-		return "", err
-	}
-	return cmd, err
+	m.command = cmd
 }
 
 func (m *Maven) UpdateParent() (string, error) {
