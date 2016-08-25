@@ -31,7 +31,7 @@ func (g *Git) HasRepo() bool {
 }
 
 func (g *Git) IsInstalled() bool {
-	err := execCommand(g.log, g.command, []string{"--version"}...)
+	_, err := exec.LookPath("git")
 	return err == nil
 }
 
