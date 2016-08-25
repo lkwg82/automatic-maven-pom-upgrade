@@ -38,7 +38,6 @@ func main() {
 	}
 
 	if *optType == "parent" {
-
 		if message, err := maven.UpdateParent(); err != nil {
 			git.CommitMessage = message
 		}

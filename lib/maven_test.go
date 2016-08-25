@@ -19,8 +19,9 @@ func TestDetectionOfMavenWrapper(t *testing.T) {
 	file, _ := os.Create("maven.log")
 
 	maven := NewMaven(file)
-	maven.DetermineCommand()
+	err := maven.DetermineCommand()
 
+	assert.Nil(t, err)
 	assert.Equal(t, maven.command, "./mvnw")
 }
 
@@ -49,10 +50,11 @@ func TestMavenWrapperFound(t *testing.T) {
 
 	// action
 	maven := NewMaven(file)
-	maven.DetermineCommand()
+	err := maven.DetermineCommand()
 
 	logContent, _ := readFile("maven.log")
 
+	assert.Nil(t, err)
 	assert.Equal(t, maven.command, "./mvnw")
 	assert.Equal(t, logContent, "x")
 }
@@ -69,7 +71,10 @@ func setupWithTestProject(testProjectName string) *Maven {
 	logFile, _ := os.Create("maven.log")
 
 	maven := NewMaven(logFile)
-	maven.DetermineCommand()
+	err := maven.DetermineCommand()
+	if err != nil {
+		panic(err)
+	}
 
 	return maven
 }
