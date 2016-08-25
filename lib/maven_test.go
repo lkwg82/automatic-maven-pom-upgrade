@@ -32,9 +32,9 @@ func TestMavenNotFound(t *testing.T) {
 	file, _ := os.Create("maven.log")
 
 	maven := NewMaven(file)
-	maven.DetermineCommand()
+	err := maven.DetermineCommand()
 
-	assert.Fail(t, "should not reach this point")
+	assert.Error(t, err)
 }
 
 func TestMavenWrapperFound(t *testing.T) {

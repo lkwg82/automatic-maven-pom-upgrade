@@ -32,7 +32,10 @@ func main() {
 
 	mavenLog, _ := os.Create("maven.log")
 	maven := NewMaven(mavenLog)
-	maven.DetermineCommand()
+	err := maven.DetermineCommand()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if *optType == "parent" {
 

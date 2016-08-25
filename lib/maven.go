@@ -28,27 +28,28 @@ func NewMaven(logfile *os.File) *Maven {
 	}
 }
 
-func (m *Maven) DetermineCommand() {
+func (m *Maven) DetermineCommand() (err error) {
 	var cmd string
 	if _, err := os.Stat("mvnw"); err == nil {
 		log.Print("maven wrapper script found")
 		cmd = "./mvnw"
 
-		err := execCommand(m.log, cmd, []string{"--version"}...)
+		err = execCommand(m.log, cmd, []string{"--version"}...)
 		if err != nil {
-			log.Fatalf("./mvnw wrapper failed: %s", err)
+			return NewWrapError(err, "./mvnw --version")
 		}
 	} else {
 		log.Print("no maven wrapper script found, try mvn from PATH")
 		cmd = "mvn"
-		_, err := exec.LookPath("mvn")
+		_, err = exec.LookPath("mvn")
 		if err != nil {
-			log.Fatal("missing mvn command")
+			return NewWrapError(err, "missing mvn command")
 		}
 		m.command = "mvn"
 	}
 
 	m.command = cmd
+	return err
 }
 
 func (m *Maven) UpdateParent() (string, error) {
