@@ -23,6 +23,11 @@ func init() {
 func main() {
 	parseParameter()
 
+	if *optType == "help" {
+		fmt.Print(goopt.Usage())
+		os.Exit(0)
+	}
+
 	gitLog, _ := os.Create("git.log")
 	git := NewGit(gitLog)
 
@@ -43,7 +48,7 @@ func main() {
 		}
 	}
 
-	git.Commit()
+	// git.Commit()
 }
 
 func assert(status bool, hint string) {
@@ -56,9 +61,4 @@ func parseParameter() {
 	goopt.Summary = "automatic upgrade maven projects"
 	goopt.Version = "0.1"
 	goopt.Parse(nil)
-
-	if *optType == "help" {
-		fmt.Print(goopt.Usage())
-		os.Exit(0)
-	}
 }
