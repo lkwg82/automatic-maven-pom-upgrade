@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	logger = *golog.New(os.Stderr, log.Debug)
+	logger = *golog.New(os.Stderr, log.Warning)
 
 	exec := &Exec{
 		logger :logger,

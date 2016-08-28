@@ -15,7 +15,7 @@ import (
 var maven *Maven
 
 func init() {
-	logger := *golog.New(os.Stderr, log.Debug)
+	logger := *golog.New(os.Stderr, log.Warning)
 	maven = NewMaven(logger)
 }
 
