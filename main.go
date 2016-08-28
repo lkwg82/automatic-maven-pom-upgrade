@@ -39,9 +39,12 @@ func main() {
 	}
 
 	if *optType == "parent" {
-		if message, err := maven.UpdateParent(); err != nil {
-			git.Commit(message)
+		message, err := maven.UpdateParent()
+		if err != nil {
+			logger.Errorf("parent update failed: %s", err)
+			os.Exit(1)
 		}
+		git.Commit(message)
 	}
 }
 
