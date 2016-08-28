@@ -28,7 +28,7 @@ func (t *TemporaryDirectoryForTests) Setup() {
 		panic(err)
 	}
 
-	if err := os.MkdirAll(path, 0655); err != nil {
+	if err := os.MkdirAll(path, 0755); err != nil {
 		panic(err)
 	}
 

@@ -41,9 +41,7 @@ func (e *Exec) execCommand(command string, arg ...string) error {
 	}
 
 	err := execCommand.Run()
-	if err == nil {
-		e.logger.Debugf(" exit code: ok ")
-	} else {
+	if err != nil {
 		exitError := err.(*exec.ExitError)
 		e.logger.Debugf(" exit code: %s ", exitError.Error())
 	}

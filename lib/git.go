@@ -21,7 +21,7 @@ func NewGit(logger golog.Logger) *Git {
 }
 
 func (g *Git) HasRepo() bool {
-	err := g.Command(g.command, "status")
+	err := g.Command(g.command, "status").Run()
 	return err == nil
 }
 

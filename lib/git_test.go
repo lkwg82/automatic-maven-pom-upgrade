@@ -9,19 +9,23 @@ import (
 )
 
 var (
-	logger  golog.Logger
+	logger golog.Logger
 	git     *Git
 	execGit func(...string) error
 )
 
 func init() {
-	logger = *golog.New(os.Stderr, log.Warning)
+	logger = *golog.New(os.Stderr, log.Debug)
 
 	exec := &Exec{
 		logger: logger,
 	}
 	execGit = func(args ...string) error {
-		return exec.execCommand("git", args...)
+		err := exec.execCommand("git", args...)
+		if err == nil {
+			return nil
+		}
+		panic(err)
 	}
 	git = NewGit(logger)
 }
@@ -37,11 +41,27 @@ func TestDetectionGitNotInstalled(t *testing.T) {
 	assert.False(t, git.IsInstalled())
 }
 
-func TestDetectionOfMissingGitDirectory(t *testing.T) {
+func TestDetectionOfMissingGitRepository(t *testing.T) {
 	setup()
 	defer cleanup()
 
 	assert.False(t, git.HasRepo())
+}
+
+func TestDetectionOfGitRepositoryFromSubdirectory(t *testing.T) {
+	setup()
+	defer cleanup()
+
+	createRepoWithSingleCommit()
+
+	if err := os.MkdirAll("x/s/a", 0744); err != nil {
+		panic(err)
+	}
+	if err := os.Chdir("x/s/a"); err != nil {
+		panic(err)
+	}
+
+	assert.True(t, git.HasRepo())
 }
 
 func TestDetectionOfNonDirtyGitRepository(t *testing.T) {
