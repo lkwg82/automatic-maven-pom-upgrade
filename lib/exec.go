@@ -12,6 +12,12 @@ type Exec struct {
 	logger golog.Logger
 }
 
+func NewExec(logger golog.Logger) *Exec {
+	return &Exec{
+		logger:logger,
+	}
+}
+
 func (e *Exec) Logger(logger golog.Logger) {
 	e.logger = logger
 }
