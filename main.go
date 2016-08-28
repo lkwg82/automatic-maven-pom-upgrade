@@ -38,13 +38,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *optType == "parent" {
-		message, err := maven.UpdateParent()
-		if err != nil {
-			logger.Errorf("parent update failed: %s", err)
-			os.Exit(1)
-		}
-		git.Commit(message)
+	switch *optType {
+	case "parent": updateParent(git, maven)
+	default:
+		panic("should never reach this point, wrong goopt config")
+	}
+}
+
+func updateParent(git *Git, maven *Maven) {
+	changeBranch(git)
+	message, err := maven.UpdateParent()
+	if err != nil {
+		logger.Errorf("parent update failed: %s", err)
+		os.Exit(1)
+	}
+	git.Commit(message)
+}
+func changeBranch(git *Git) {
+	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {
+		git.BranchCheckoutExisting(branch)
+	} else {
+		git.BranchCheckoutNew(branch)
 	}
 }
 
