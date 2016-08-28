@@ -14,8 +14,8 @@ import (
 
 var optVerbose = goopt.Flag([]string{
 	"-v", "--verbose"},
-	[]string{"--quiet"}, "output verbosely",
-	"be quiet, instead")
+	nil, "output verbosely",
+	"")
 
 var optType = goopt.Alternatives([]string{"--type"}, []string{"help", "parent"}, "type of upgrade")
 var logger golog.Logger
