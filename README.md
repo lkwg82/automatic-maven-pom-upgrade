@@ -32,6 +32,8 @@ with installed GO and JDK
 ./build.sh
 ```
 
+and use the `bin/upgrade` binary
+
 ## continuous testing
 
 install  `inotify-tools` on Linux (or add OSX support)
