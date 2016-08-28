@@ -55,6 +55,18 @@ func TestMavenWrapperFound(t *testing.T) {
 	assert.Equal(t, maven.command, "./mvnw")
 }
 
+func TestMavenParentPomUpdate(t *testing.T) {
+	maven := setupWithTestProject("simple-parent-update")
+	defer cleanup()
+
+	// action
+	updateMessage, err := maven.UpdateParent()
+
+	assert.Nil(t, err)
+	assert.NotZero(t, updateMessage)
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
+}
+
 func initMaven() *Maven {
 	logger := *golog.New(os.Stderr, log.Debug)
 	maven := NewMaven(logger)
@@ -78,16 +90,4 @@ func setupWithTestProject(testProjectName string) *Maven {
 	}
 
 	return maven
-}
-
-func TestMavenParentPomUpdate(t *testing.T) {
-	maven := setupWithTestProject("simple-parent-update")
-	defer cleanup()
-
-	// action
-	updateMessage, err := maven.UpdateParent()
-
-	assert.Nil(t, err)
-	assert.NotZero(t, updateMessage)
-	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
 }

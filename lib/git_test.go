@@ -21,13 +21,6 @@ func TestDetectionGitNotInstalled(t *testing.T) {
 	assert.False(t, g.IsInstalled())
 }
 
-func initGit() *Git {
-	logger :=   *golog.New(os.Stderr, log.Debug)
-	g := NewGit(logger)
-
-	return g
-}
-
 func TestDetectionOfMissingGitDirectory(t *testing.T) {
 	setup()
 	defer cleanup()
@@ -91,6 +84,11 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 
 	assert.True(t, git.BranchExists("test"), "missing branch test")
 	assert.Equal(t, git.BranchCurrent(), "test")
+}
+
+func initGit() *Git {
+	logger :=   *golog.New(os.Stderr, log.Debug)
+	return NewGit(logger)
 }
 
 func createRepoWithSingleCommit() {
