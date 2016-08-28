@@ -8,19 +8,21 @@ import (
 	"github.com/alexcesaro/log/golog"
 )
 
-const plugin_version = "2.3"
-
-var (
-	plugin = fmt.Sprintf("org.codehaus.mojo:versions-maven-plugin:%s", plugin_version)
+const (
+	plugin_name = "org.codehaus.mojo:versions-maven-plugin"
+	plugin_version = "2.3"
 )
 
 type Maven struct {
 	Exec
 	command string
+	plugin  string
 }
 
 func NewMaven(logger golog.Logger) *Maven {
-	maven := &Maven{}
+	maven := &Maven{
+		plugin : fmt.Sprintf("%s:%s", plugin_name, plugin_version),
+	}
 	maven.Logger(logger)
 	return maven
 }
@@ -52,7 +54,7 @@ func (m *Maven) DetermineCommand() (err error) {
 
 func (m *Maven) UpdateParent() (string, error) {
 	m.logger.Info("updating parent")
-	args := []string{plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}
+	args := []string{m.plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}
 	m.logger.Debugf("executing: %s %s", m.command, strings.Join(args, " "))
 	command := exec.Command(m.command, args...)
 
