@@ -33,15 +33,21 @@ func (g *Git) IsInstalled() bool {
 func (g *Git) BranchExists(branch string) bool {
 	output, err := g.Command(g.command, "branch", "--list", branch).Output()
 
+	n := len(output)
+	content := strings.TrimSpace(string(output[:n]))
+	lines := strings.Split(content, "\n")
+	if g.logger.LogDebug() {
+		for _, line := range lines {
+			g.logger.Debug("output " + line)
+		}
+	}
+
 	if err != nil {
-		n := len(output)
 		g.logger.Emergencyf("checking of branch '%s' exists: %s \n %s", string(output[:n]), err)
 		os.Exit(1)
 	}
 
-	n := len(output)
-	lines := strings.Split(string(output[:n]), "\n")
-	return lines[0] == "* " + branch
+	return lines[0] == "* " + branch || lines[0] == branch
 }
 
 func (g *Git) IsDirty() bool {
@@ -52,8 +58,7 @@ func (g *Git) IsDirty() bool {
 	}
 
 	n := len(output)
-	content := string(output[:n])
-	content = strings.TrimSpace(content)
+	content := strings.TrimSpace(string(output[:n]))
 	if content == "" {
 		return false
 	}

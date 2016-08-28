@@ -98,6 +98,18 @@ func TestGit_BranchExists(t *testing.T) {
 	assert.True(t, git.BranchExists("test"))
 }
 
+func TestGit_BranchExistsNotOnBranch(t *testing.T) {
+	setup()
+	defer cleanup()
+
+	createRepoWithSingleCommit()
+
+	execGit("checkout", "-b", "test")
+	execGit("checkout", "master")
+
+	assert.True(t, git.BranchExists("test"))
+}
+
 func TestGit_BranchCheckoutNew(t *testing.T) {
 	setup()
 	defer cleanup()
