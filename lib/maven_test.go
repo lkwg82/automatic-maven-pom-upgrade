@@ -56,9 +56,8 @@ func TestMavenWrapperFound(t *testing.T) {
 }
 
 func initMaven() *Maven {
-	maven := NewMaven()
 	logger := *golog.New(os.Stderr, log.Debug)
-	maven.Logger(logger)
+	maven := NewMaven(logger)
 	return maven
 }
 

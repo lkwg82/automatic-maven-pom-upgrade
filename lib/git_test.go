@@ -4,6 +4,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"github.com/alexcesaro/log/golog"
+	"github.com/alexcesaro/log"
 )
 
 func TestDetectionGitNotInstalled(t *testing.T) {
@@ -14,18 +16,23 @@ func TestDetectionGitNotInstalled(t *testing.T) {
 	defer os.Setenv("PATH", path)
 	os.Setenv("PATH", ".")
 
-	file, _ := os.Create("git.log")
-	g := NewGit(file)
+	g := initGit()
 
 	assert.False(t, g.IsInstalled())
+}
+
+func initGit() *Git {
+	logger :=   *golog.New(os.Stderr, log.Debug)
+	g := NewGit(logger)
+
+	return g
 }
 
 func TestDetectionOfMissingGitDirectory(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	file, _ := os.Create("git.log")
-	g := NewGit(file)
+	g := initGit()
 
 	assert.False(t, g.HasRepo())
 }
@@ -36,11 +43,7 @@ func TestDetectionOfNonDirtyGitRepository(t *testing.T) {
 
 	execCmd("git", []string{"init"})
 
-	file, _ := os.Create("git.log")
-	// need to removed
-	os.Remove("git.log")
-
-	g := NewGit(file)
+	g := initGit()
 
 	assert.True(t, g.IsDirty())
 }
@@ -56,8 +59,7 @@ func TestDetectionOfDirtyGitRepository(t *testing.T) {
 		assert.Error(t, err)
 	}
 
-	file, _ := os.Create("git.log")
-	g := NewGit(file)
+	g := initGit()
 
 	assert.True(t, g.IsDirty())
 }
@@ -68,9 +70,8 @@ func TestGit_BranchExists(t *testing.T) {
 
 	createRepoWithSingleCommit()
 
-	file, _ := os.Create("git.log")
+	git := initGit()
 	os.Remove("git.log")
-	git := NewGit(file)
 
 	execCmd("git", []string{"checkout", "-b", "test"})
 
@@ -83,9 +84,8 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 
 	createRepoWithSingleCommit()
 
-	file, _ := os.Create("git.log")
+	git := initGit()
 	os.Remove("git.log")
-	git := NewGit(file)
 
 	git.BranchCheckoutNew("test")
 
@@ -112,9 +112,8 @@ func TestGit_BranchCheckoutExisting(t *testing.T) {
 	execCmd("git", []string{"checkout", "-b", "test"})
 	execCmd("git", []string{"checkout", "master"})
 
-	file, _ := os.Create("git.log")
+	git := initGit()
 	os.Remove("git.log")
-	git := NewGit(file)
 
 	git.BranchCheckoutExisting("test")
 

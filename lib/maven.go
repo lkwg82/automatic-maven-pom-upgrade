@@ -1,12 +1,10 @@
 package lib
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
 	"os/exec"
-	"io"
 	"github.com/alexcesaro/log/golog"
 )
 
@@ -16,43 +14,15 @@ var (
 	plugin = fmt.Sprintf("org.codehaus.mojo:versions-maven-plugin:%s", plugin_version)
 )
 
-type Exec struct {
-	logger golog.Logger
-}
-
-func (e *Exec) Logger(logger golog.Logger) {
-	e.logger = logger
-}
-
-func (e *Exec) execCommand(command string, arg ...string) error {
-	execCommand := exec.Command(command, arg...)
-	e.logger.Debugf("executing: %s %s", command, strings.Join(arg, " "))
-
-	if e.logger.LogDebug() {
-		stdout, _ := execCommand.StdoutPipe()
-		stderr, _ := execCommand.StderrPipe()
-
-		copyToLog := func(rc io.ReadCloser) {
-			in := bufio.NewScanner(rc)
-			for in.Scan() {
-				e.logger.Debug(in.Text())
-			}
-		}
-
-		go copyToLog(stdout)
-		go copyToLog(stderr)
-	}
-
-	return execCommand.Run()
-}
-
 type Maven struct {
 	Exec
 	command string
 }
 
-func NewMaven() *Maven {
-	return &Maven{}
+func NewMaven(logger golog.Logger) *Maven {
+	maven := &Maven{}
+	maven.Logger(logger)
+	return maven
 }
 
 func (m *Maven) DetermineCommand() (err error) {

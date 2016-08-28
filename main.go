@@ -25,15 +25,13 @@ func main() {
 		os.Exit(0)
 	}
 
-	gitLog, _ := os.Create("git.log")
-	git := NewGit(gitLog)
+	git := NewGit(logger)
 
 	assert(git.IsInstalled(), "need git to be installed or in the PATH")
 	assert(git.HasRepo(), "need called from a directory, which has a repository")
 	assert(!git.IsDirty(), "repository is dirty, plz commit or reset")
 
-	maven := NewMaven()
-	maven.Logger(logger)
+	maven := NewMaven(logger)
 	err := maven.DetermineCommand()
 	if err != nil {
 		logger.Emergency(err)

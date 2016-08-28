@@ -1,30 +1,28 @@
 package lib
 
 import (
-	"bufio"
 	"log"
-	"os"
 	"os/exec"
 	"strings"
+	"github.com/alexcesaro/log/golog"
 )
 
 type Git struct {
-	log           *bufio.Writer
-	logFile       *os.File
+	Exec
 	command       string
 	CommitMessage string
 }
 
-func NewGit(logfile *os.File) *Git {
-	return &Git{
-		log:     bufio.NewWriter(logfile),
-		logFile: logfile,
+func NewGit(logger golog.Logger) *Git {
+	git := &Git{
 		command: "git",
 	}
+	git.Logger(logger)
+	return git
 }
 
 func (g *Git) HasRepo() bool {
-	err := execCommand(g.log, g.command, "status")
+	err := g.execCommand(g.command, "status")
 	return err == nil
 }
 
@@ -82,15 +80,16 @@ func (g *Git) BranchCheckoutNew(branch string) {
 }
 
 func (g *Git) Commit() {
+	g.execCommand2(g.command + " add pom.xml")
 	args := []string{"commit", "-m", g.CommitMessage, "pom.xml"}
-	err := execCommand(g.log, g.command, args...)
+	err := g.execCommand(g.command, args...)
 	if err != nil {
 		log.Panic(err)
 	}
 }
 
 func (g *Git) exec(arguments string) {
-	err := execCommand2(g.log, g.command + " " + arguments)
+	err := g.execCommand2(g.command + " " + arguments)
 	if err != nil {
 		log.Panic(err)
 	}
