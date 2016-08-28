@@ -1,12 +1,8 @@
 package lib
 
 import (
-	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
-	"strings"
 )
 
 type TemporaryDirectoryForTests struct {
@@ -55,19 +51,5 @@ func (t *TemporaryDirectoryForTests) Cleanup() {
 			}
 			t.testDirectory = ""
 		}
-	}
-}
-
-func execCmd(cmd string, args []string) {
-	fmt.Println("exec: " + cmd + " " + strings.Join(args, " "))
-	execCommand := exec.Command(cmd, args...)
-	stdout, _ := execCommand.StdoutPipe()
-	stderr, _ := execCommand.StderrPipe()
-	go io.Copy(os.Stdout, stdout)
-	go io.Copy(os.Stderr, stderr)
-
-	err := execCommand.Run()
-	if err != nil {
-		panic(err)
 	}
 }

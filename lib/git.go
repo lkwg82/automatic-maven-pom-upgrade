@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strings"
 	"github.com/alexcesaro/log/golog"
+	"os"
 )
 
 type Git struct {
@@ -32,8 +33,7 @@ func (g *Git) IsInstalled() bool {
 }
 
 func (g *Git) BranchExists(branch string) bool {
-	args := []string{"branch", "--list", branch}
-	output, err := exec.Command(g.command, args...).Output()
+	output, err := exec.Command(g.command, "branch", "--list", branch).Output()
 
 	if err != nil {
 		log.Panic(err)
@@ -45,8 +45,7 @@ func (g *Git) BranchExists(branch string) bool {
 }
 
 func (g *Git) IsDirty() bool {
-	args := []string{"status", "--porcelain"}
-	output, err := exec.Command(g.command, args...).Output()
+	output, err := exec.Command(g.command, "status", "--porcelain").Output()
 
 	if err != nil {
 		panic(err)
@@ -60,8 +59,7 @@ func (g *Git) IsDirty() bool {
 }
 
 func (g *Git) BranchCurrent() string {
-	args := []string{"symbolic-ref", "--short", "HEAD"}
-	output, err := exec.Command(g.command, args...).Output()
+	output, err := exec.Command(g.command, "symbolic-ref", "--short", "HEAD").Output()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -91,6 +89,7 @@ func (g *Git) Commit() {
 func (g *Git) exec(arguments string) {
 	err := g.execCommand2(g.command + " " + arguments)
 	if err != nil {
-		log.Panic(err)
+		g.logger.Emergency(err)
+		os.Exit(1)
 	}
 }

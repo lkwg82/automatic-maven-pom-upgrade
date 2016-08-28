@@ -8,6 +8,20 @@ import (
 	"github.com/alexcesaro/log"
 )
 
+var (
+	logger golog.Logger
+	execCmd func(string,...string) error
+)
+
+func init() {
+	logger = *golog.New(os.Stderr, log.Debug)
+
+	exec := &Exec{
+		logger :logger,
+	}
+	execCmd = exec.execCommand
+}
+
 func TestDetectionGitNotInstalled(t *testing.T) {
 	setup()
 	defer cleanup()
@@ -34,7 +48,7 @@ func TestDetectionOfNonDirtyGitRepository(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	execCmd("git", []string{"init"})
+	execCmd("git", "init")
 
 	g := initGit()
 
@@ -45,7 +59,7 @@ func TestDetectionOfDirtyGitRepository(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	execCmd("git", []string{"init"})
+	execCmd("git", "init")
 
 	_, err := os.Create("test")
 	if err != nil {
@@ -64,9 +78,8 @@ func TestGit_BranchExists(t *testing.T) {
 	createRepoWithSingleCommit()
 
 	git := initGit()
-	os.Remove("git.log")
 
-	execCmd("git", []string{"checkout", "-b", "test"})
+	execCmd("git", "checkout", "-b", "test")
 
 	assert.True(t, git.BranchExists("test"))
 }
@@ -78,7 +91,6 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 	createRepoWithSingleCommit()
 
 	git := initGit()
-	os.Remove("git.log")
 
 	git.BranchCheckoutNew("test")
 
@@ -87,19 +99,18 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 }
 
 func initGit() *Git {
-	logger :=   *golog.New(os.Stderr, log.Debug)
 	return NewGit(logger)
 }
 
 func createRepoWithSingleCommit() {
-	execCmd("git", []string{"init"})
+	execCmd("git", "init")
 
-	execCmd("git", []string{"config", "user.email", "test@ci.com"})
-	execCmd("git", []string{"config", "user.name", "test"})
+	execCmd("git", "config", "user.email", "test@ci.com")
+	execCmd("git", "config", "user.name", "test")
 
 	os.Create("test")
-	execCmd("git", []string{"add", "test"})
-	execCmd("git", []string{"commit", "-m", "'test'", "test"})
+	execCmd("git", "add", "test")
+	execCmd("git", "commit", "-m", "'test'", "test")
 }
 
 func TestGit_BranchCheckoutExisting(t *testing.T) {
@@ -107,11 +118,10 @@ func TestGit_BranchCheckoutExisting(t *testing.T) {
 	defer cleanup()
 
 	createRepoWithSingleCommit()
-	execCmd("git", []string{"checkout", "-b", "test"})
-	execCmd("git", []string{"checkout", "master"})
+	execCmd("git", "checkout", "-b", "test")
+	execCmd("git", "checkout", "master")
 
 	git := initGit()
-	os.Remove("git.log")
 
 	git.BranchCheckoutExisting("test")
 
