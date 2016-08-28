@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	plugin_name    = "org.codehaus.mojo:versions-maven-plugin"
+	plugin_name = "org.codehaus.mojo:versions-maven-plugin"
 	plugin_version = "2.3"
 )
 
@@ -61,7 +61,8 @@ func (m *Maven) UpdateParent() (string, error) {
 	output, err := command.CombinedOutput()
 
 	if err != nil {
-		m.logger.Error("something failed: %s", err)
+		n := len(output)
+		m.logger.Error("something failed: %s\n %s", err, string(output[:n]))
 		os.Exit(1)
 		return "", err
 	}
