@@ -56,9 +56,10 @@ func updateParent(git *Git, maven *Maven) {
 	if updated {
 		git.Commit(message)
 	} else {
-		fmt.Printf("update not needed: %s \n",message)
+		fmt.Printf("update not needed: %s \n", message)
 	}
 }
+
 func changeBranch(git *Git) {
 	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {
 		git.BranchCheckoutExisting(branch)

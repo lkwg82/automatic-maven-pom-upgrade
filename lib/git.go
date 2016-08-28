@@ -21,7 +21,7 @@ func NewGit(logger golog.Logger) *Git {
 }
 
 func (g *Git) HasRepo() bool {
-	err := g.execCommand(g.command, "status")
+	err := g.Command(g.command, "status")
 	return err == nil
 }
 
@@ -31,20 +31,21 @@ func (g *Git) IsInstalled() bool {
 }
 
 func (g *Git) BranchExists(branch string) bool {
-	output, err := exec.Command(g.command, "branch", "--list", branch).Output()
+	output, err := g.Command(g.command, "branch", "--list", branch).Output()
 
 	if err != nil {
-		g.logger.Emergency(err)
+		n := len(output)
+		g.logger.Emergencyf("checking of branch '%s' exists: %s \n %s", string(output[:n]), err)
 		os.Exit(1)
 	}
 
 	n := len(output)
 	lines := strings.Split(string(output[:n]), "\n")
-	return lines[0] == "* "+branch
+	return lines[0] == "* " + branch
 }
 
 func (g *Git) IsDirty() bool {
-	output, err := exec.Command(g.command, "status", "--porcelain").Output()
+	output, err := g.Command(g.command, "status", "--porcelain").Output()
 
 	if err != nil {
 		panic(err)
@@ -67,7 +68,7 @@ func (g *Git) IsDirty() bool {
 }
 
 func (g *Git) BranchCurrent() string {
-	output, err := exec.Command(g.command, "symbolic-ref", "--short", "HEAD").Output()
+	output, err := g.Command(g.command, "symbolic-ref", "--short", "HEAD").Output()
 	if err != nil {
 		g.logger.Emergency(err)
 		os.Exit(1)

@@ -27,21 +27,21 @@ func NewMaven(logger golog.Logger) *Maven {
 	return maven
 }
 
-func (m *Maven) DetermineCommand() (err error) {
+func (m *Maven) DetermineCommand() error {
 	m.logger.Info("determine command")
 	var cmd string
 	if _, err := os.Stat("mvnw"); err == nil {
 		m.logger.Info("maven wrapper script found")
 		cmd = "./mvnw"
 
-		err = m.execCommand(cmd, []string{"--version"}...)
+		err = m.execCommand(cmd, "--version")
 		if err != nil {
 			return NewWrapError(err, "./mvnw --version")
 		}
 	} else {
 		m.logger.Info("no maven wrapper script found, try mvn from PATH")
 		cmd = "mvn"
-		_, err = exec.LookPath("mvn")
+		_, err := exec.LookPath("mvn")
 		if err != nil {
 			return NewWrapError(err, "missing mvn command")
 		}
@@ -49,14 +49,13 @@ func (m *Maven) DetermineCommand() (err error) {
 	}
 
 	m.command = cmd
-	return err
+	return nil
 }
 
 func (m *Maven) UpdateParent() (bool, string, error) {
 	m.logger.Info("updating parent")
 	args := []string{m.plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}
-	m.logger.Debugf("executing: %s %s", m.command, strings.Join(args, " "))
-	command := exec.Command(m.command, args...)
+	command := m.Command(m.command, args...)
 
 	output, err := command.CombinedOutput()
 

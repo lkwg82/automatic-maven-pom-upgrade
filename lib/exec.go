@@ -16,9 +16,14 @@ func (e *Exec) Logger(logger golog.Logger) {
 	e.logger = logger
 }
 
-func (e *Exec) execCommand(command string, arg ...string) error {
+func (e *Exec) Command(command string, arg ...string) *exec.Cmd {
 	execCommand := exec.Command(command, arg...)
 	e.logger.Debugf("executing: %s %s", command, strings.Join(arg, " "))
+	return execCommand
+}
+
+func (e *Exec) execCommand(command string, arg ...string) error {
+	execCommand := e.Command(command, arg...)
 
 	if e.logger.LogDebug() {
 		stdout, _ := execCommand.StdoutPipe()
@@ -35,7 +40,15 @@ func (e *Exec) execCommand(command string, arg ...string) error {
 		go copyToLog(stderr)
 	}
 
-	return execCommand.Run()
+	err := execCommand.Run()
+	if err == nil {
+		e.logger.Debugf(" exit code: ok ")
+	} else {
+		exitError := err.(*exec.ExitError)
+		e.logger.Debugf(" exit code: %s ", exitError.Error())
+	}
+
+	return err
 }
 
 func (e *Exec) execCommand2(cmdline string) error {
