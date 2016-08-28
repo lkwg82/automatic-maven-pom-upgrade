@@ -17,8 +17,11 @@ var optVerbose = goopt.Flag([]string{
 	nil, "output verbosely",
 	"")
 
+var hookAfterCommit = goopt.String([]string{"--hook-after"}, "/bin/echo", "command to call after commit (commit message is 1st arg)")
 var optType = goopt.Alternatives([]string{"--type"}, []string{"help", "parent"}, "type of upgrade")
 var logger golog.Logger
+
+var hooks = make(map[string]string)
 
 func main() {
 	parseParameter()
@@ -58,8 +61,18 @@ func updateParent(git *Git, maven *Maven) {
 
 	if updated {
 		git.Commit(message)
+		execAfterCommitHook(message)
 	} else {
 		fmt.Printf("update not needed: %s \n", message)
+	}
+}
+
+func execAfterCommitHook(message string) {
+	cmd := NewExec(logger)
+	err := cmd.ExecCommand(hooks["afterCommit"], message)
+	if err != nil {
+		logger.Error(err);
+		os.Exit(1);
 	}
 }
 
@@ -105,4 +118,6 @@ func parseParameter() {
 	} else {
 		logger = *golog.New(os.Stderr, log.Warning)
 	}
+
+	hooks["afterCommit"] = *hookAfterCommit
 }

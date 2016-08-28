@@ -34,7 +34,7 @@ func (m *Maven) DetermineCommand() error {
 		m.logger.Info("maven wrapper script found")
 		cmd = "./mvnw"
 
-		err = m.execCommand(cmd, "--version")
+		err = m.ExecCommand(cmd, "--version")
 		if err != nil {
 			return NewWrapError(err, "./mvnw --version")
 		}

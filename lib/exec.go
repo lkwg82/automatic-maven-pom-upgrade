@@ -28,7 +28,7 @@ func (e *Exec) Command(command string, arg ...string) *exec.Cmd {
 	return execCommand
 }
 
-func (e *Exec) execCommand(command string, arg ...string) error {
+func (e *Exec) ExecCommand(command string, arg ...string) error {
 	execCommand := e.Command(command, arg...)
 
 	if e.logger.LogDebug() {
@@ -63,5 +63,5 @@ func (e *Exec) execCommand2(cmdline string) error {
 			validArgs = append(validArgs, p)
 		}
 	}
-	return e.execCommand(validArgs[0], validArgs[1:]...)
+	return e.ExecCommand(validArgs[0], validArgs[1:]...)
 }

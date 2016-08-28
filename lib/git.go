@@ -95,7 +95,7 @@ func (g *Git) BranchCheckoutNew(branch string) {
 func (g *Git) Commit(message string) {
 	g.execCommand2(g.command + " add pom.xml")
 	args := []string{"commit", "-m", "'" + message + "'", "pom.xml"}
-	err := g.execCommand(g.command, args...)
+	err := g.ExecCommand(g.command, args...)
 	if err != nil {
 		g.logger.Emergency(err)
 		os.Exit(1)

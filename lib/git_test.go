@@ -21,7 +21,7 @@ func init() {
 		logger: logger,
 	}
 	execGit = func(args ...string) error {
-		err := exec.execCommand("git", args...)
+		err := exec.ExecCommand("git", args...)
 		if err == nil {
 			return nil
 		}
