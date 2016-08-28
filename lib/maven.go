@@ -52,7 +52,7 @@ func (m *Maven) DetermineCommand() (err error) {
 	return err
 }
 
-func (m *Maven) UpdateParent() (string, error) {
+func (m *Maven) UpdateParent() (bool, string, error) {
 	m.logger.Info("updating parent")
 	args := []string{m.plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}
 	m.logger.Debugf("executing: %s %s", m.command, strings.Join(args, " "))
@@ -63,18 +63,29 @@ func (m *Maven) UpdateParent() (string, error) {
 	if err != nil {
 		n := len(output)
 		m.logger.Error("something failed: %s\n %s", err, string(output[:n]))
-		os.Exit(1)
-		return "", err
+		panic("something went wrong")
 	}
 
 	n := len(output)
 	content := string(output[:n])
 	lines := strings.Split(content, "\n")
+
+	updateToken := "[INFO] Updating parent from "
+	noupdateToken := "[INFO] Current version of "
+
+	m.logger.Debug(content)
+
 	for _, line := range lines {
-		updateToken := "[INFO] Updating parent from "
 		if strings.HasPrefix(line, updateToken) {
-			return line[7:], err
+			message := line[7:]
+			m.logger.Infof("updated: %s", message)
+			return true, message, err
+		} else if strings.HasPrefix(line, noupdateToken) {
+			message := line[7:]
+			m.logger.Infof("no update: %s", message)
+			return false, message, err
 		}
 	}
-	panic("missed the line with the message : " + content)
+
+	panic("something went wrgon : " + content)
 }

@@ -47,12 +47,17 @@ func main() {
 
 func updateParent(git *Git, maven *Maven) {
 	changeBranch(git)
-	message, err := maven.UpdateParent()
+	updated, message, err := maven.UpdateParent()
 	if err != nil {
 		logger.Errorf("parent update failed: %s", err)
 		os.Exit(1)
 	}
-	git.Commit(message)
+
+	if updated {
+		git.Commit(message)
+	} else {
+		fmt.Printf("update not needed: %s \n",message)
+	}
 }
 func changeBranch(git *Git) {
 	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {

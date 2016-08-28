@@ -36,7 +36,7 @@ func TestMavenNotFound(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	os.Setenv("PATH", "")
+	os.Unsetenv("PATH")
 
 	err := maven.DetermineCommand()
 
@@ -62,12 +62,24 @@ func TestMavenParentPomUpdate(t *testing.T) {
 	maven := setupWithTestProject(t, "simple-parent-update")
 	defer cleanup()
 
-	// action
-	updateMessage, err := maven.UpdateParent()
+	updated, updateMessage, err := maven.UpdateParent()
 
 	assert.Nil(t, err)
 	assert.NotZero(t, updateMessage)
-	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : "+updateMessage)
+	assert.True(t, updated)
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
+}
+
+func TestMavenParentPomUpdateTwice(t *testing.T) {
+	maven := setupWithTestProject(t, "simple-parent-update")
+	defer cleanup()
+
+	updated, updateMessage, err := maven.UpdateParent()
+	updated, updateMessage, err = maven.UpdateParent()
+
+	assert.Nil(t, err)
+	assert.False(t, updated)
+	assert.NotEmpty(t, updateMessage)
 }
 
 func setupWithTestProject(t *testing.T, testProjectName string) *Maven {
