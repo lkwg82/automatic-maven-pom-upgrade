@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"runtime"
 	"path"
-	"strings"
 )
 
 var optVerbose = goopt.Flag([]string{
@@ -93,15 +92,15 @@ func parseParameter() {
 			args[0] = fmt.Sprintf("%s:%d %s", path.Base(file), line, args[0])
 			oldFormatter(buf, level, args)
 
-			_, file2, line2, _ := runtime.Caller(4)
-			args[0] = fmt.Sprintf(" %s:%d -> %s", path.Base(file2), line2, args[0])
-			oldFormatter(buf, level, args)
-
-			_, file3, line3, _ := runtime.Caller(5)
-			if !strings.Contains(file3, "/runtime/") {
-				args[0] = fmt.Sprintf("  %s:%d -> %s", path.Base(file3), line3, args[0])
-				oldFormatter(buf, level, args)
-			}
+			//_, file2, line2, _ := runtime.Caller(4)
+			//args[0] = fmt.Sprintf(" %s:%d -> %s", path.Base(file2), line2, args[0])
+			//oldFormatter(buf, level, args)
+			//
+			//_, file3, line3, _ := runtime.Caller(5)
+			//if !strings.Contains(file3, "/runtime/") {
+			//	args[0] = fmt.Sprintf("  %s:%d -> %s", path.Base(file3), line3, args[0])
+			//	oldFormatter(buf, level, args)
+			//}
 		}
 	} else {
 		logger = *golog.New(os.Stderr, log.Warning)
