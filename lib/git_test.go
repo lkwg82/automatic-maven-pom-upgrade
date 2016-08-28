@@ -10,7 +10,8 @@ import (
 
 var (
 	logger golog.Logger
-	execCmd func(string,...string) error
+	git *Git
+	execGit func(...string) error
 )
 
 func init() {
@@ -19,7 +20,10 @@ func init() {
 	exec := &Exec{
 		logger :logger,
 	}
-	execCmd = exec.execCommand
+	execGit = func(args ...string) error {
+		return exec.execCommand("git", args...)
+	}
+	git = NewGit(logger)
 }
 
 func TestDetectionGitNotInstalled(t *testing.T) {
@@ -30,45 +34,37 @@ func TestDetectionGitNotInstalled(t *testing.T) {
 	defer os.Setenv("PATH", path)
 	os.Setenv("PATH", ".")
 
-	g := initGit()
-
-	assert.False(t, g.IsInstalled())
+	assert.False(t, git.IsInstalled())
 }
 
 func TestDetectionOfMissingGitDirectory(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	g := initGit()
-
-	assert.False(t, g.HasRepo())
+	assert.False(t, git.HasRepo())
 }
 
 func TestDetectionOfNonDirtyGitRepository(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	execCmd("git", "init")
+	execGit("init")
 
-	g := initGit()
-
-	assert.True(t, g.IsDirty())
+	assert.False(t, git.IsDirty())
 }
 
 func TestDetectionOfDirtyGitRepository(t *testing.T) {
 	setup()
 	defer cleanup()
 
-	execCmd("git", "init")
+	execGit("init")
 
 	_, err := os.Create("test")
 	if err != nil {
 		assert.Error(t, err)
 	}
 
-	g := initGit()
-
-	assert.True(t, g.IsDirty())
+	assert.True(t, git.IsDirty())
 }
 
 func TestGit_BranchExists(t *testing.T) {
@@ -77,9 +73,7 @@ func TestGit_BranchExists(t *testing.T) {
 
 	createRepoWithSingleCommit()
 
-	git := initGit()
-
-	execCmd("git", "checkout", "-b", "test")
+	execGit("checkout", "-b", "test")
 
 	assert.True(t, git.BranchExists("test"))
 }
@@ -90,27 +84,10 @@ func TestGit_BranchCheckoutNew(t *testing.T) {
 
 	createRepoWithSingleCommit()
 
-	git := initGit()
-
 	git.BranchCheckoutNew("test")
 
 	assert.True(t, git.BranchExists("test"), "missing branch test")
 	assert.Equal(t, git.BranchCurrent(), "test")
-}
-
-func initGit() *Git {
-	return NewGit(logger)
-}
-
-func createRepoWithSingleCommit() {
-	execCmd("git", "init")
-
-	execCmd("git", "config", "user.email", "test@ci.com")
-	execCmd("git", "config", "user.name", "test")
-
-	os.Create("test")
-	execCmd("git", "add", "test")
-	execCmd("git", "commit", "-m", "'test'", "test")
 }
 
 func TestGit_BranchCheckoutExisting(t *testing.T) {
@@ -118,13 +95,38 @@ func TestGit_BranchCheckoutExisting(t *testing.T) {
 	defer cleanup()
 
 	createRepoWithSingleCommit()
-	execCmd("git", "checkout", "-b", "test")
-	execCmd("git", "checkout", "master")
-
-	git := initGit()
+	execGit("checkout", "-b", "test")
+	execGit("checkout", "master")
 
 	git.BranchCheckoutExisting("test")
 
 	assert.True(t, git.BranchExists("test"), "missing branch test")
 	assert.Equal(t, git.BranchCurrent(), "test")
+}
+
+func TestGit_Commit(t *testing.T) {
+	setup()
+	defer cleanup()
+
+	createRepoWithSingleCommit()
+
+	_, err := os.Create("pom.xml")
+	if err != nil {
+		panic(err)
+	}
+
+	git.Commit("initial update")
+
+	assert.False(t, git.IsDirty())
+}
+
+func createRepoWithSingleCommit() {
+	execGit("init")
+
+	execGit("config", "user.email", "test@ci.com")
+	execGit("config", "user.name", "test")
+
+	os.Create("test")
+	execGit("add", "test")
+	execGit("commit", "-m", "'test'", "test")
 }

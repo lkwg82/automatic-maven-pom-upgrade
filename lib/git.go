@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"log"
 	"os/exec"
 	"strings"
 	"github.com/alexcesaro/log/golog"
@@ -10,8 +9,7 @@ import (
 
 type Git struct {
 	Exec
-	command       string
-	CommitMessage string
+	command string
 }
 
 func NewGit(logger golog.Logger) *Git {
@@ -36,7 +34,8 @@ func (g *Git) BranchExists(branch string) bool {
 	output, err := exec.Command(g.command, "branch", "--list", branch).Output()
 
 	if err != nil {
-		log.Panic(err)
+		g.logger.Emergency(err)
+		os.Exit(1)
 	}
 
 	n := len(output)
@@ -52,7 +51,16 @@ func (g *Git) IsDirty() bool {
 	}
 
 	n := len(output)
-	lines := strings.Split(string(output[:n]), "\n")
+	content := string(output[:n])
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return false
+	}
+
+	lines := strings.Split(content, "\n")
+
+	g.logger.Debugf("output %d", len(lines))
+	g.logger.Debugf("output '%s'", string(output[:n]))
 
 	// empty line has at least one line
 	return len(lines) > 0
@@ -61,7 +69,8 @@ func (g *Git) IsDirty() bool {
 func (g *Git) BranchCurrent() string {
 	output, err := exec.Command(g.command, "symbolic-ref", "--short", "HEAD").Output()
 	if err != nil {
-		log.Panic(err)
+		g.logger.Emergency(err)
+		os.Exit(1)
 	}
 
 	n := len(output)
@@ -77,12 +86,13 @@ func (g *Git) BranchCheckoutNew(branch string) {
 	g.exec("checkout -b " + branch)
 }
 
-func (g *Git) Commit() {
+func (g *Git) Commit(message string) {
 	g.execCommand2(g.command + " add pom.xml")
-	args := []string{"commit", "-m", g.CommitMessage, "pom.xml"}
+	args := []string{"commit", "-m", "'" + message + "'", "pom.xml"}
 	err := g.execCommand(g.command, args...)
 	if err != nil {
-		log.Panic(err)
+		g.logger.Emergency(err)
+		os.Exit(1)
 	}
 }
 

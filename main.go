@@ -40,11 +40,9 @@ func main() {
 
 	if *optType == "parent" {
 		if message, err := maven.UpdateParent(); err != nil {
-			git.CommitMessage = message
+			git.Commit(message)
 		}
 	}
-
-	git.Commit()
 }
 
 func assert(status bool, hint string) {
