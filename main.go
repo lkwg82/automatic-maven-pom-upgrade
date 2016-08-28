@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/droundy/goopt"
 	. "github.com/lkwg82/automatic-maven-pom-upgrade/lib"
-	"log"
 	"os"
+	"github.com/alexcesaro/log/golog"
+	"github.com/alexcesaro/log"
 )
 
 var optVerbose = goopt.Flag([]string{
@@ -14,11 +15,7 @@ var optVerbose = goopt.Flag([]string{
 	"be quiet, instead")
 
 var optType = goopt.Alternatives([]string{"--type"}, []string{"help", "parent"}, "type of upgrade")
-
-func init() {
-	log.SetOutput(os.Stdout)
-	log.SetFlags(log.Lshortfile)
-}
+var logger golog.Logger
 
 func main() {
 	parseParameter()
@@ -35,11 +32,12 @@ func main() {
 	assert(git.HasRepo(), "need called from a directory, which has a repository")
 	assert(!git.IsDirty(), "repository is dirty, plz commit or reset")
 
-	mavenLog, _ := os.Create("maven.log")
-	maven := NewMaven(mavenLog)
+	maven := NewMaven()
+	maven.Logger(logger)
 	err := maven.DetermineCommand()
 	if err != nil {
-		log.Fatal(err)
+		logger.Emergency(err)
+		os.Exit(1)
 	}
 
 	if *optType == "parent" {
@@ -48,12 +46,13 @@ func main() {
 		}
 	}
 
-	// git.Commit()
+	git.Commit()
 }
 
 func assert(status bool, hint string) {
 	if (!status) {
-		log.Fatal("ERROR: " + hint)
+		logger.Error(hint)
+		os.Exit(1)
 	}
 }
 
@@ -61,4 +60,10 @@ func parseParameter() {
 	goopt.Summary = "automatic upgrade maven projects"
 	goopt.Version = "0.1"
 	goopt.Parse(nil)
+
+	if *optVerbose {
+		logger = *golog.New(os.Stderr, log.Debug)
+	} else {
+		logger = *golog.New(os.Stderr, log.Warning)
+	}
 }

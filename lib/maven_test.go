@@ -8,6 +8,8 @@ import (
 	"path"
 	"strings"
 	"testing"
+	"github.com/alexcesaro/log/golog"
+	"github.com/alexcesaro/log"
 )
 
 func TestDetectionOfMavenWrapper(t *testing.T) {
@@ -16,9 +18,8 @@ func TestDetectionOfMavenWrapper(t *testing.T) {
 
 	content := "#!/bin/sh\necho -n x"
 	ioutil.WriteFile("./mvnw", []byte(content), 0700)
-	file, _ := os.Create("maven.log")
 
-	maven := NewMaven(file)
+	maven := initMaven()
 	err := maven.DetermineCommand()
 
 	assert.Nil(t, err)
@@ -30,9 +31,8 @@ func TestMavenNotFound(t *testing.T) {
 	defer cleanup()
 
 	os.Setenv("PATH", "")
-	file, _ := os.Create("maven.log")
 
-	maven := NewMaven(file)
+	maven := initMaven()
 	err := maven.DetermineCommand()
 
 	assert.Error(t, err)
@@ -43,20 +43,23 @@ func TestMavenWrapperFound(t *testing.T) {
 	defer cleanup()
 
 	os.Setenv("PATH", ".")
-
 	content := "#!/bin/sh\necho -n x"
 	ioutil.WriteFile("mvnw", []byte(content), 0700)
-	file, _ := os.Create("maven.log")
+
+	maven := initMaven()
 
 	// action
-	maven := NewMaven(file)
 	err := maven.DetermineCommand()
-
-	logContent, _ := readFile("maven.log")
 
 	assert.Nil(t, err)
 	assert.Equal(t, maven.command, "./mvnw")
-	assert.Equal(t, logContent, "x")
+}
+
+func initMaven() *Maven {
+	maven := NewMaven()
+	logger := *golog.New(os.Stderr, log.Debug)
+	maven.Logger(logger)
+	return maven
 }
 
 func setupWithTestProject(testProjectName string) *Maven {
@@ -68,9 +71,8 @@ func setupWithTestProject(testProjectName string) *Maven {
 	if err := os.Chdir("x/" + testProjectName); err != nil {
 		panic(err)
 	}
-	logFile, _ := os.Create("maven.log")
 
-	maven := NewMaven(logFile)
+	maven := initMaven()
 	err := maven.DetermineCommand()
 	if err != nil {
 		panic(err)

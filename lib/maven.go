@@ -3,10 +3,11 @@ package lib
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"os/exec"
+	"io"
+	"github.com/alexcesaro/log/golog"
 )
 
 const plugin_version = "2.3"
@@ -15,31 +16,58 @@ var (
 	plugin = fmt.Sprintf("org.codehaus.mojo:versions-maven-plugin:%s", plugin_version)
 )
 
+type Exec struct {
+	logger golog.Logger
+}
+
+func (e *Exec) Logger(logger golog.Logger) {
+	e.logger = logger
+}
+
+func (e *Exec) execCommand(command string, arg ...string) error {
+	execCommand := exec.Command(command, arg...)
+	e.logger.Debugf("executing: %s %s", command, strings.Join(arg, " "))
+
+	if e.logger.LogDebug() {
+		stdout, _ := execCommand.StdoutPipe()
+		stderr, _ := execCommand.StderrPipe()
+
+		copyToLog := func(rc io.ReadCloser) {
+			in := bufio.NewScanner(rc)
+			for in.Scan() {
+				e.logger.Debug(in.Text())
+			}
+		}
+
+		go copyToLog(stdout)
+		go copyToLog(stderr)
+	}
+
+	return execCommand.Run()
+}
+
 type Maven struct {
-	log     *bufio.Writer
-	logFile *os.File
+	Exec
 	command string
 }
 
-func NewMaven(logfile *os.File) *Maven {
-	return &Maven{
-		log:     bufio.NewWriter(logfile),
-		logFile: logfile,
-	}
+func NewMaven() *Maven {
+	return &Maven{}
 }
 
 func (m *Maven) DetermineCommand() (err error) {
+	m.logger.Info("determine command")
 	var cmd string
 	if _, err := os.Stat("mvnw"); err == nil {
-		log.Print("maven wrapper script found")
+		m.logger.Info("maven wrapper script found")
 		cmd = "./mvnw"
 
-		err = execCommand(m.log, cmd, []string{"--version"}...)
+		err = m.execCommand(cmd, []string{"--version"}...)
 		if err != nil {
 			return NewWrapError(err, "./mvnw --version")
 		}
 	} else {
-		log.Print("no maven wrapper script found, try mvn from PATH")
+		m.logger.Info("no maven wrapper script found, try mvn from PATH")
 		cmd = "mvn"
 		_, err = exec.LookPath("mvn")
 		if err != nil {
@@ -53,18 +81,21 @@ func (m *Maven) DetermineCommand() (err error) {
 }
 
 func (m *Maven) UpdateParent() (string, error) {
-	log.Print("updating parent")
-	err := execCommand(m.log, m.command, []string{plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}...)
+	m.logger.Info("updating parent")
+	args := []string{plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}
+	m.logger.Debugf("executing: %s %s", m.command, strings.Join(args, " "))
+	command := exec.Command(m.command, args...)
+
+	output, err := command.CombinedOutput()
 
 	if err != nil {
-		log.Fatalf("something failed: %s", err)
+		m.logger.Error("something failed: %s", err)
+		os.Exit(1)
 		return "", err
 	}
-	content, err := readFile(m.logFile.Name())
-	if err != nil {
-		panic(err)
-	}
 
+	n := len(output)
+	content := string(output[:n])
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
 		updateToken := "[INFO] Updating parent from "
