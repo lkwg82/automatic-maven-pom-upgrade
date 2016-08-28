@@ -1,10 +1,10 @@
 package lib
 
 import (
-	"os/exec"
-	"strings"
 	"github.com/alexcesaro/log/golog"
 	"os"
+	"os/exec"
+	"strings"
 )
 
 type Git struct {
@@ -40,7 +40,7 @@ func (g *Git) BranchExists(branch string) bool {
 
 	n := len(output)
 	lines := strings.Split(string(output[:n]), "\n")
-	return lines[0] == "* " + branch
+	return lines[0] == "* "+branch
 }
 
 func (g *Git) IsDirty() bool {

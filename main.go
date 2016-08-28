@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/alexcesaro/log"
+	"github.com/alexcesaro/log/golog"
 	"github.com/droundy/goopt"
 	. "github.com/lkwg82/automatic-maven-pom-upgrade/lib"
 	"os"
-	"github.com/alexcesaro/log/golog"
-	"github.com/alexcesaro/log"
 )
 
 var optVerbose = goopt.Flag([]string{
@@ -49,7 +49,7 @@ func main() {
 }
 
 func assert(status bool, hint string) {
-	if (!status) {
+	if !status {
 		logger.Error(hint)
 		os.Exit(1)
 	}

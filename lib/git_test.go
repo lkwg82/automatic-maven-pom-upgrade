@@ -1,16 +1,16 @@
 package lib
 
 import (
+	"github.com/alexcesaro/log"
+	"github.com/alexcesaro/log/golog"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
-	"github.com/alexcesaro/log/golog"
-	"github.com/alexcesaro/log"
 )
 
 var (
-	logger golog.Logger
-	git *Git
+	logger  golog.Logger
+	git     *Git
 	execGit func(...string) error
 )
 
@@ -18,7 +18,7 @@ func init() {
 	logger = *golog.New(os.Stderr, log.Warning)
 
 	exec := &Exec{
-		logger :logger,
+		logger: logger,
 	}
 	execGit = func(args ...string) error {
 		return exec.execCommand("git", args...)

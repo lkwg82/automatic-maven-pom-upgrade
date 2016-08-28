@@ -2,14 +2,14 @@ package lib
 
 import (
 	"fmt"
-	"os"
-	"strings"
-	"os/exec"
 	"github.com/alexcesaro/log/golog"
+	"os"
+	"os/exec"
+	"strings"
 )
 
 const (
-	plugin_name = "org.codehaus.mojo:versions-maven-plugin"
+	plugin_name    = "org.codehaus.mojo:versions-maven-plugin"
 	plugin_version = "2.3"
 )
 
@@ -21,7 +21,7 @@ type Maven struct {
 
 func NewMaven(logger golog.Logger) *Maven {
 	maven := &Maven{
-		plugin : fmt.Sprintf("%s:%s", plugin_name, plugin_version),
+		plugin: fmt.Sprintf("%s:%s", plugin_name, plugin_version),
 	}
 	maven.Logger(logger)
 	return maven

@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"github.com/alexcesaro/log"
+	"github.com/alexcesaro/log/golog"
 	"github.com/rafecolton/go-fileutils"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -8,8 +10,6 @@ import (
 	"path"
 	"strings"
 	"testing"
-	"github.com/alexcesaro/log/golog"
-	"github.com/alexcesaro/log"
 )
 
 var maven *Maven
@@ -67,7 +67,7 @@ func TestMavenParentPomUpdate(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotZero(t, updateMessage)
-	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : "+updateMessage)
 }
 
 func setupWithTestProject(t *testing.T, testProjectName string) *Maven {

@@ -1,11 +1,11 @@
 package lib
 
 import (
-	"os/exec"
-	"strings"
-	"io"
 	"bufio"
 	"github.com/alexcesaro/log/golog"
+	"io"
+	"os/exec"
+	"strings"
 )
 
 type Exec struct {
