@@ -12,6 +12,13 @@ import (
 	"github.com/alexcesaro/log"
 )
 
+var maven *Maven
+
+func init() {
+	logger := *golog.New(os.Stderr, log.Debug)
+	maven = NewMaven(logger)
+}
+
 func TestDetectionOfMavenWrapper(t *testing.T) {
 	setup()
 	defer cleanup()
@@ -19,7 +26,6 @@ func TestDetectionOfMavenWrapper(t *testing.T) {
 	content := "#!/bin/sh\necho -n x"
 	ioutil.WriteFile("./mvnw", []byte(content), 0700)
 
-	maven := initMaven()
 	err := maven.DetermineCommand()
 
 	assert.Nil(t, err)
@@ -32,7 +38,6 @@ func TestMavenNotFound(t *testing.T) {
 
 	os.Setenv("PATH", "")
 
-	maven := initMaven()
 	err := maven.DetermineCommand()
 
 	assert.Error(t, err)
@@ -46,8 +51,6 @@ func TestMavenWrapperFound(t *testing.T) {
 	content := "#!/bin/sh\necho -n x"
 	ioutil.WriteFile("mvnw", []byte(content), 0700)
 
-	maven := initMaven()
-
 	// action
 	err := maven.DetermineCommand()
 
@@ -56,7 +59,7 @@ func TestMavenWrapperFound(t *testing.T) {
 }
 
 func TestMavenParentPomUpdate(t *testing.T) {
-	maven := setupWithTestProject("simple-parent-update")
+	maven := setupWithTestProject(t, "simple-parent-update")
 	defer cleanup()
 
 	// action
@@ -67,13 +70,7 @@ func TestMavenParentPomUpdate(t *testing.T) {
 	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
 }
 
-func initMaven() *Maven {
-	logger := *golog.New(os.Stderr, log.Debug)
-	maven := NewMaven(logger)
-	return maven
-}
-
-func setupWithTestProject(testProjectName string) *Maven {
+func setupWithTestProject(t *testing.T, testProjectName string) *Maven {
 	setup()
 	sourcePath := path.Dir(temporaryDirectoryForTests.Cwd + "/../test-projects/" + testProjectName)
 	if err := fileutils.CpR(sourcePath, "x"); err != nil {
@@ -83,7 +80,10 @@ func setupWithTestProject(testProjectName string) *Maven {
 		panic(err)
 	}
 
-	maven := initMaven()
+	if _, exists := os.LookupEnv("JAVA_HOME"); !exists {
+		t.Skip("missing JAVA_HOME env, try again this test in on the shell")
+	}
+
 	err := maven.DetermineCommand()
 	if err != nil {
 		panic(err)
