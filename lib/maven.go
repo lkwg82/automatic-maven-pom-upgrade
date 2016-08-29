@@ -72,7 +72,11 @@ func (m *Maven) UpdateParent() (bool, string, error) {
 	updateToken := "[INFO] Updating parent from "
 	noupdateToken := "[INFO] Current version of "
 
-	m.logger.Debug(content)
+	if m.logger.LogDebug() {
+		for _, line := range strings.Split(content, "\n") {
+			m.logger.Debug(line)
+		}
+	}
 
 	for _, line := range lines {
 		if strings.HasPrefix(line, updateToken) {
