@@ -15,6 +15,10 @@ Having a bot which automatically try to find new dependencies. If it finds some 
 - TODO dependency updates
 - TODO plugin updates
 
+# Requirements
+- git installed
+- java installed and JAVA_HOME set
+- a maven project (of course ;))
 
 # development
 
