@@ -82,6 +82,15 @@ func TestMavenParentPomUpdateTwice(t *testing.T) {
 	assert.NotEmpty(t, updateMessage)
 }
 
+func TestMavenSettingsPathIsMissing(t *testing.T) {
+	defer cleanup()
+	maven := setupWithTestProject(t, "simple-parent-update")
+
+	err := maven.SettingsPath("x")
+
+	assert.Error(t, err)
+}
+
 func setupWithTestProject(t *testing.T, testProjectName string) *Maven {
 	setup()
 	sourcePath := path.Dir(temporaryDirectoryForTests.Cwd + "/../test-projects/" + testProjectName)

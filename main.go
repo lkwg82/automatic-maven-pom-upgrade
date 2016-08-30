@@ -12,6 +12,7 @@ import (
 	"path"
 )
 
+var optMavenSettingsPath = goopt.String([]string{"--maven-settings"}, "", "path to maven settings (equivalent to -s)")
 var optVerbose = goopt.Flag([]string{
 	"-v", "--verbose"},
 	nil, "output verbosely",
@@ -40,6 +41,11 @@ func main() {
 	maven := NewMaven(logger)
 	err := maven.DetermineCommand()
 	if err != nil {
+		logger.Emergency(err)
+		os.Exit(1)
+	}
+
+	if err := maven.SettingsPath(*optMavenSettingsPath); err != nil{
 		logger.Emergency(err)
 		os.Exit(1)
 	}

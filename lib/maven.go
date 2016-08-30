@@ -15,8 +15,9 @@ const (
 
 type Maven struct {
 	Exec
-	command string
-	plugin  string
+	command      string
+	plugin       string
+	settingsPath string
 }
 
 func NewMaven(logger golog.Logger) *Maven {
@@ -55,6 +56,9 @@ func (m *Maven) DetermineCommand() error {
 func (m *Maven) UpdateParent() (bool, string, error) {
 	m.logger.Info("updating parent")
 	args := []string{m.plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}
+	if m.settingsPath != "" {
+		args = append(args, "-s", m.settingsPath)
+	}
 	command := m.Command(m.command, args...)
 
 	output, err := command.CombinedOutput()
@@ -87,4 +91,22 @@ func (m *Maven) UpdateParent() (bool, string, error) {
 	}
 
 	panic("something went wrgon : " + content)
+}
+
+func (m *Maven) SettingsPath(path string) error {
+	if path == "" {
+		m.logger.Debug("ignoring empty settings path")
+		return nil
+	}
+
+	file, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return NewWrapError2("path '" + path + "' is not existing")
+	}
+
+	if file.IsDir() {
+		return NewWrapError2("path '" + path + "' is directory, expected a file")
+	}
+	m.settingsPath = path
+	return nil
 }
