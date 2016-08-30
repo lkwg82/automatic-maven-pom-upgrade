@@ -59,8 +59,8 @@ func TestMavenWrapperFound(t *testing.T) {
 }
 
 func TestMavenParentPomUpdate(t *testing.T) {
-	maven := setupWithTestProject(t, "simple-parent-update")
 	defer cleanup()
+	maven := setupWithTestProject(t, "simple-parent-update")
 
 	updated, updateMessage, err := maven.UpdateParent()
 
@@ -71,8 +71,8 @@ func TestMavenParentPomUpdate(t *testing.T) {
 }
 
 func TestMavenParentPomUpdateTwice(t *testing.T) {
-	maven := setupWithTestProject(t, "simple-parent-update")
 	defer cleanup()
+	maven := setupWithTestProject(t, "simple-parent-update")
 
 	updated, updateMessage, err := maven.UpdateParent()
 	updated, updateMessage, err = maven.UpdateParent()
