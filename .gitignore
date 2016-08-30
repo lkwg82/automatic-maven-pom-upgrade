@@ -1,5 +1,6 @@
 .idea
 *.iml
 bin
-test
+dist
 logs
+test
