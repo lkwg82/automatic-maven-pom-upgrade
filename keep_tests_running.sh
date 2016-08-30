@@ -3,6 +3,16 @@
 set -e
 #set -x
 
+case $(uname) in
+ "Darwin")
+     brew install fswatch
+     watchCommand='fswatch -m fsevents_monitor -x  -1  -r *.go *.sh lib/*.go'
+     ;;
+ "Linux")
+     watchCommand='inotifywait -r -e close_write,move_self *.sh *.go lib;'
+     ;;
+esac
+
 pushd () {
     command pushd "$@" > /dev/null
 }
@@ -12,7 +22,7 @@ popd () {
 }
 
 echo "-------------------------------------------------------------------------------------------"
-inotifywait -r -e close_write,move_self *.sh *.go lib;
+${watchCommand}
 
 echo
 echo " ---- RUN ---- "
@@ -21,7 +31,7 @@ echo
 mkdir -p test
 
 executeProgramm() {
-    pushd test && ../bin/upgrade
+    pushd test && ../bin/upgrade__
     popd
 }
 

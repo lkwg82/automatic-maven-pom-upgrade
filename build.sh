@@ -25,8 +25,11 @@ echo " building"
 
 build() {
   go build -ldflags="-s -w" -o bin/upgrade_${GOOS}_${GOARCH} main.go
-  upx -9 bin/upgrade_${GOOS}_${GOARCH}
+
+  [ -n "$RELEASE" ] && upx --ultra-brute bin/upgrade_${GOOS}_${GOARCH}
 }
+
+build
 
 export GOOS=linux
 export GOARCH=amd64
@@ -36,5 +39,5 @@ export GOOS=darwin
 export GOARCH=amd64
 build
 
-#mkdir -p dist
-#cp bin/upgrade dist/upgrade-$(git rev-parse HEAD)-linux-amd64
+unset GOOS
+unset GOARCH
