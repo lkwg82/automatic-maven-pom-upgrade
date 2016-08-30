@@ -14,11 +14,6 @@ go get github.com/stretchr/testify/assert
 
 echo " run tests"
 go test -v ./...
-#> logs/test.log && rm logs/test.log || bash -c 'cat logs/test.log && exit 1'
-#go fmt ./...
-
-# cross compiling
-# https://golang.org/doc/install/source#environment
 
 mkdir -p bin
 echo " building"
@@ -31,6 +26,8 @@ build() {
 
 build
 
+# cross compiling
+# https://golang.org/doc/install/source#environment
 export GOOS=linux
 export GOARCH=amd64
 build
