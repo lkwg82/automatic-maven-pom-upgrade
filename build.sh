@@ -22,7 +22,19 @@ go test -v ./...
 
 mkdir -p bin
 echo " building"
-env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/upgrade main.go > logs/build.log && rm logs/build.log || bash -c 'cat logs/build.log && exit 1'
 
-mkdir -p dist
-cp bin/upgrade dist/upgrade-$(git rev-parse HEAD)-linux-amd64
+build() {
+  go build -ldflags="-s -w" -o bin/upgrade_${GOOS}_${GOARCH} main.go
+  upx -9 bin/upgrade_${GOOS}_${GOARCH}
+}
+
+export GOOS=linux
+export GOARCH=amd64
+build
+
+export GOOS=darwin
+export GOARCH=amd64
+build
+
+#mkdir -p dist
+#cp bin/upgrade dist/upgrade-$(git rev-parse HEAD)-linux-amd64
