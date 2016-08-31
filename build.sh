@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-set -x
+#set -x
 
 mkdir -p logs
 
@@ -21,7 +21,7 @@ echo " building"
 build() {
   go build -ldflags="-s -w" -o bin/upgrade_${GOOS}_${GOARCH} main.go
 
-  [ -n "$RELEASE" ] && upx --ultra-brute bin/upgrade_${GOOS}_${GOARCH}
+  [ -n "$RELEASE" ] && upx --ultra-brute bin/upgrade_${GOOS}_${GOARCH} || echo -n ""
 }
 
 build
