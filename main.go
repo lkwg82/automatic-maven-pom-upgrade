@@ -13,15 +13,14 @@ import (
 )
 
 var optMavenSettingsPath = goopt.String([]string{"--maven-settings"}, "", "path to maven settings (equivalent to -s)")
-var optVerbose = goopt.Flag([]string{
-	"-v", "--verbose"},
-	nil, "output verbosely",
-	"")
-
 var hookAfterCommit = goopt.String([]string{"--hook-after"}, "/bin/echo", "command to call after commit (commit message is 1st arg)")
-var optType = goopt.Alternatives([]string{"--type"}, []string{"help", "parent"}, "type of upgrade")
-var logger golog.Logger
 
+var optNoCommit = goopt.Flag([]string{"--no-commit"}, nil, "skip commit", "")
+var optQuiet = goopt.Flag([]string{"-q", "--quiet"}, nil, "suppress any output", "")
+var optType = goopt.Alternatives([]string{"-t", "--type"}, []string{"help", "parent"}, "type of upgrade")
+var optVerbose = goopt.Flag([]string{"-v", "--verbose"}, nil, "output verbosely", "")
+
+var logger golog.Logger
 var hooks = make(map[string]string)
 
 func main() {
@@ -66,14 +65,31 @@ func updateParent(git *Git, maven *Maven) {
 	}
 
 	if updated {
-		git.Commit(message)
-		execAfterCommitHook(message)
+		echo("result: " + message)
+		if !*optNoCommit {
+			echo("committing '%s'", message)
+			git.Commit(message)
+			execAfterCommitHook(message)
+		} else {
+			echo("skipping commit")
+		}
 	} else {
-		fmt.Printf("update not needed: %s \n", message)
+		echo("update not needed: %s ", message)
+	}
+}
+
+func echo(format string, arg ...string) {
+	if !*optQuiet {
+		if len(arg) == 0 {
+			fmt.Println(format)
+		} else {
+			fmt.Printf(format + "\n", arg)
+		}
 	}
 }
 
 func execAfterCommitHook(message string) {
+	echo("executing afterCommitHook")
 	cmd := NewExec(logger)
 	err := cmd.ExecCommand(hooks["afterCommit"], message)
 	if err != nil {
