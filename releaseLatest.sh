@@ -16,8 +16,8 @@ tool delete || echo "no latest release yet"
 git config user.email "builds@travis-ci.com"
 git config user.name "Travis CI"
 git remote add origin2 git@github.com:${TRAVIS_REPO_SLUG}.git
-
-find .ssh
+find .
+ssh-add travis
 
 git push --delete origin2 latest || echo "no latest tag"
 
