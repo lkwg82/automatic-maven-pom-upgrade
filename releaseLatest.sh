@@ -13,11 +13,10 @@ function tool() {
 
 tool delete || echo "no latest release yet"
 
-git config user.email "builds@travis-ci.com"
-git config user.name "Travis CI"
-git remote add origin2 git@github.com:${TRAVIS_REPO_SLUG}.git
-find .
-git push --delete origin2 latest || echo "no latest tag"
+#git config user.email "builds@travis-ci.com"
+#git config user.name "Travis CI"
+#git remote add origin2 git@github.com:${TRAVIS_REPO_SLUG}.git
+#git push --delete origin2 latest || echo "no latest tag"
 
 DESCRIPTION=$(echo -n "will_be_released_with_each_successful_commit__${TRAVIS_COMMIT} at ${TRAVIS_STACK_TIMESTAMP}" | sed -e 's# #_#g')
 tool release --pre-release --description ${DESCRIPTION}
