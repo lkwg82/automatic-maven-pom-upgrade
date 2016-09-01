@@ -1,4 +1,5 @@
 [![travisci](https://travis-ci.org/lkwg82/automatic-maven-pom-upgrade.svg)](https://travis-ci.org/lkwg82/automatic-maven-pom-upgrade)
+[![GoDoc](https://godoc.org/github.com/lkwg82/automatic-maven-pom-upgrade?status.svg)](https://godoc.org/github.com/lkwg82/automatic-maven-pom-upgrade)  
 
 automatic-maven-pom-upgrade
 ===========================
