@@ -9,8 +9,8 @@ go:
 script:
 #  - "./docker/docker_run.sh" # run tests in docker
 #  - "sudo rm -rf bin"
-  - sudo apt-get update && sudo apt-get install -y upx
-  - "env SKIP_TESTS=1 ./buildRelease.sh"
+#  - sudo apt-get update && sudo apt-get install -y upx
+  - "env SKIP_TESTS=1 ./build.sh"
   - "./releaseLatest.sh"
 
 env:

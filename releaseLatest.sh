@@ -13,7 +13,11 @@ function tool() {
 
 tool delete || echo "no latest release yet"
 
-DESCRIPTION=$(echo -n "will_be_released_with_each_successful_commit__${TRAVIS_COMMIT} at ${TRAVIS_COMMIT}" | sed -e 's# #_#g')
+git config user.email "builds@travis-ci.com"
+git config user.name "Travis CI"
+git push --delete origin latest || echo "no latest tag"
+
+DESCRIPTION=$(echo -n "will_be_released_with_each_successful_commit__${TRAVIS_COMMIT} at ${TRAVIS_STACK_TIMESTAMP}" | sed -e 's# #_#g')
 tool release --pre-release --description ${DESCRIPTION}
 tool upload --name upgrade_linux_amd64 -f bin/upgrade_linux_amd64
 tool upload --name upgrade_darwin_amd64 -f bin/upgrade_darwin_amd64
