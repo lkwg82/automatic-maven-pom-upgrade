@@ -9,12 +9,10 @@ go:
 script:
 #  - "./docker/docker_run.sh" # run tests in docker
 #  - "sudo rm -rf bin"
-  - env | sort
-  - sudo apt-get update
-  - sudo apt-get install -y upx
-  - "env SKIP_TESTS=1 ./buildRelease.sh"
+#  - sudo apt-get update && sudo apt-get install -y upx
+  - "env SKIP_TESTS=1 ./build.sh"
   - "./releaseLatest.sh"
 
 env:
   global:
-    secure: Q+Pp6hV1h7XJ6kWarbIuVtbsytfM5yh20duTKhsE6tltIbUpaXuJ91wz2j1PPWuUZxRu7+y+SGpRz0NbH9vAkBOiZcKmqjowe/W0qOx52wVFYhr1HULi0SqJO7TZTjlfWz/6h/I81fn/+ZZ5Dfnb4rlK/nsExOnF2aShGg3EuxI=
+    secure: LIEPF0q0NpT6dhaswPr33u8DY01Dm3Qzr4g0MuDPPYOoL0hI1O5DhPugwk0DPOJbqieXuA5mKcqv1T3vg6TUjqr5G/U7B8p7UmRf4e1HjrDqePpWNvG0i/AF++/akwjpDCa5kWXhqxB+gPYEL3jl+jz8aALrnuK0MULJ/4ZD48I=
