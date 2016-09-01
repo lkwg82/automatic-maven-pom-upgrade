@@ -8,6 +8,7 @@ go:
 
 script:
   - "./docker/docker_run.sh" # run tests in docker
+  - "env SKIP_TESTS=1 ./buildRelease.sh"
   - "./releaseLatest.sh"
 
 env:
