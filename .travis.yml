@@ -1,5 +1,15 @@
 sudo: required
 services:
-  - docker
+- docker
 
-script: ./docker/docker_run.sh
+language: go
+go:
+  - 1.7
+
+script:
+  - "./docker/docker_run.sh" # run tests in docker
+  - "./releaseLatest.sh"
+
+env:
+  global:
+    secure: Q+Pp6hV1h7XJ6kWarbIuVtbsytfM5yh20duTKhsE6tltIbUpaXuJ91wz2j1PPWuUZxRu7+y+SGpRz0NbH9vAkBOiZcKmqjowe/W0qOx52wVFYhr1HULi0SqJO7TZTjlfWz/6h/I81fn/+ZZ5Dfnb4rlK/nsExOnF2aShGg3EuxI=
