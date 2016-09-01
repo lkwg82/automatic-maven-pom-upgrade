@@ -13,6 +13,7 @@ function tool() {
 
 tool delete || echo "no latest release yet"
 
-tool release --pre-release --description "will_be_released_with_each_successful_commit"
+DESCRIPTION=$(echo -n "will_be_released_with_each_successful_commit__${TRAVIS_COMMIT} at ${TRAVIS_COMMIT}" | sed -e 's# #_#g')
+tool release --pre-release --description ${DESCRIPTION}
 tool upload --name upgrade_linux_amd64 -f bin/upgrade_linux_amd64
 tool upload --name upgrade_darwin_amd64 -f bin/upgrade_darwin_amd64
