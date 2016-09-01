@@ -5,8 +5,10 @@ set -e
 
 mkdir -p logs
 
-echo " run tests"
-go test -v ./lib/...
+if [ -z "$SKIP_TESTS" ]; then
+    echo " run tests"
+    go test -v ./lib/...
+fi
 
 mkdir -p bin
 echo " building"
