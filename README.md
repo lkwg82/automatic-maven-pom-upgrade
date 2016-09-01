@@ -152,7 +152,7 @@ install  `inotify-tools` on Linux (or add OSX support)
 ## add new packages
 
 ```bash
-get get ...
+go get ...
 # copy them into vendor directory
 govendor add +external
 ```
