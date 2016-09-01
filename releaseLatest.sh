@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
-#set -x
+set -x
 
 go get github.com/aktau/github-release
-
-github-release --help
 
 function tool() {
  local cmd=$1

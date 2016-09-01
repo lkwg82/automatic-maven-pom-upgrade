@@ -15,7 +15,9 @@ echo " building"
 
 build() {
   go build -ldflags="-s -w" -o bin/upgrade_${GOOS}_${GOARCH} main.go
+}
 
+_upx() {
   [ -n "$RELEASE" ] && upx --ultra-brute bin/upgrade_${GOOS}_${GOARCH} || echo -n ""
 }
 
@@ -26,10 +28,12 @@ build
 export GOOS=linux
 export GOARCH=amd64
 build
+_upx
 
 export GOOS=darwin
 export GOARCH=amd64
 build
+_upx
 
 unset GOOS
 unset GOARCH
