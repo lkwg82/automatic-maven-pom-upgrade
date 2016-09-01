@@ -6,7 +6,7 @@ set -e
 mkdir -p logs
 
 echo " run tests"
-go test -v ./...
+go test -v ./lib/...
 
 mkdir -p bin
 echo " building"
