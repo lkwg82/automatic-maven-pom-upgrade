@@ -120,6 +120,11 @@ index 47fb9cd..cee402c 100644
 
 # development
 
+## requirements
+- go 1.7
+- `govendor` (install with `go get -u github.com/kardianos/govendor`)
+- java and `JAVA_HOME` set
+
 ## building
 
 with Docker
@@ -142,4 +147,12 @@ install  `inotify-tools` on Linux (or add OSX support)
 
 ```bash
 ./keep_tests_running.sh
+```
+
+## add new packages
+
+```bash
+get get ...
+# copy them into vendor directory
+govendor add +external
 ```

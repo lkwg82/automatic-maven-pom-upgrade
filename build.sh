@@ -5,13 +5,6 @@ set -e
 
 mkdir -p logs
 
-go get github.com/alexcesaro/log
-go get github.com/alexcesaro/log/golog
-go get github.com/droundy/goopt
-go get github.com/go-errors/errors
-go get github.com/rafecolton/go-fileutils
-go get github.com/stretchr/testify/assert
-
 echo " run tests"
 go test -v ./...
 

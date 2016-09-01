@@ -1,0 +1,63 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "0nlCYGveus21+QrbtmHE84r28wg=",
+			"path": "github.com/alexcesaro/log",
+			"revision": "61e686294e58a8698a9e1091268bb4ac1116bd5e",
+			"revisionTime": "2015-09-15T19:59:37Z"
+		},
+		{
+			"checksumSHA1": "HFq+LTxRFFisJB1gpAw9AYfsawU=",
+			"path": "github.com/alexcesaro/log/golog",
+			"revision": "61e686294e58a8698a9e1091268bb4ac1116bd5e",
+			"revisionTime": "2015-09-15T19:59:37Z"
+		},
+		{
+			"checksumSHA1": "gDaSUeZ7Qifh31q7xUljJRXRdTo=",
+			"path": "github.com/alexcesaro/log/logtest",
+			"revision": "61e686294e58a8698a9e1091268bb4ac1116bd5e",
+			"revisionTime": "2015-09-15T19:59:37Z"
+		},
+		{
+			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "d77da356e56a7428ad25149ca77381849a6a5232",
+			"revisionTime": "2016-06-15T09:26:46Z"
+		},
+		{
+			"checksumSHA1": "qc3BItwX9QiC/oBPR2a6Vt6DIXw=",
+			"path": "github.com/droundy/goopt",
+			"revision": "e5c9ab183a102ef3ad2363b04483784258984157",
+			"revisionTime": "2015-10-12T15:57:52Z"
+		},
+		{
+			"checksumSHA1": "GMRXftJcIcFOvY7e8TpHvT3GJpE=",
+			"path": "github.com/go-errors/errors",
+			"revision": "a41850380601eeb43f4350f7d17c6bbd8944aaf8",
+			"revisionTime": "2015-09-06T02:33:21Z"
+		},
+		{
+			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "d77da356e56a7428ad25149ca77381849a6a5232",
+			"revisionTime": "2016-06-15T09:26:46Z"
+		},
+		{
+			"checksumSHA1": "3YUr8ETavi8WG+ygwKTRvv3HTEo=",
+			"path": "github.com/rafecolton/go-fileutils",
+			"revision": "f2bf9a2a685355797adbdd7f1d9191ad32f76115",
+			"revisionTime": "2014-12-10T06:19:11Z"
+		},
+		{
+			"checksumSHA1": "5mJ/wol4LCFBUct8fbQVkRJv7ZI=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "d77da356e56a7428ad25149ca77381849a6a5232",
+			"revisionTime": "2016-06-15T09:26:46Z"
+		}
+	],
+	"rootPath": "github.com/lkwg82/automatic-maven-pom-upgrade"
+}
