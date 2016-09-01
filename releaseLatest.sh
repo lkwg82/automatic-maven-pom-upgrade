@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
+#set -x
 
 go get github.com/aktau/github-release
 
 github-release --help
 
 function tool() {
- set +x
  local cmd=$1
  shift
- set -x
  github-release ${cmd} --user lkwg82 --repo automatic-maven-pom-upgrade --tag "latest" $@
 }
 
