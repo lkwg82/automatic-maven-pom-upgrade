@@ -11,14 +11,8 @@ script:
 env:
   global:
     secure: LIEPF0q0NpT6dhaswPr33u8DY01Dm3Qzr4g0MuDPPYOoL0hI1O5DhPugwk0DPOJbqieXuA5mKcqv1T3vg6TUjqr5G/U7B8p7UmRf4e1HjrDqePpWNvG0i/AF++/akwjpDCa5kWXhqxB+gPYEL3jl+jz8aALrnuK0MULJ/4ZD48I=
-#before_install:
-#- mkdir -p .ssh
-#- cp .travisci_ssh_config .ssh/config && chmod 0600 .ssh/config
-#- openssl aes-256-cbc -K $encrypted_e03d47956173_key -iv $encrypted_e03d47956173_iv
-#  -in travis.enc -out .ssh/key -d
-#- chmod 0600 .ssh/key
 
 # http://stackoverflow.com/questions/31882306/how-to-configure-travis-ci-to-build-pull-requests-merges-to-master-w-o-redunda
 branches:
-  only: 
+  only:
     - master
