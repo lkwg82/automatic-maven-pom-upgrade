@@ -9,7 +9,7 @@ set -e
 sudo rm -rf bin
 
 # only start release process of latest, when on master
-if [ "${TRAVIS_BRANCH}" == "master" ]; then
+if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
   sudo apt-get update && sudo apt-get install -y upx
   env SKIP_TESTS=1 ./buildRelease.sh
   ./releaseLatest.sh
