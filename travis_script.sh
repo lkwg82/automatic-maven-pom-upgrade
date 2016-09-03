@@ -3,7 +3,7 @@
 set -e
 
 echo "building docker"
-./docker/docker_build.sh
+source ./docker/docker_build.sh
 
 # only start release process of latest, when on master
 if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
