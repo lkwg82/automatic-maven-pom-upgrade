@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
+
 set -e
 
-cid=$(docker build docker | tail -n1 | cut -d\  -f3)
+bash -n $0
 
 project=src/github.com/lkwg82/automatic-maven-pom-upgrade
 
-docker run -v $(pwd):/go/${project} --workdir /go/${project} -ti ${cid}
+docker run -v $(pwd):/go/${project} \
+            --workdir /go/${project} \
+            -e RELEASE=${RELEASE:-""} \
+            -ti ${DOCKER_CONTAINER}

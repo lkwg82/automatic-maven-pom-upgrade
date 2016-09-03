@@ -26,9 +26,7 @@ determineCurrentOS() {
 }
 
 determineCurrentArch() {
-     set -x
      local arch=$(uname -p)
-     set +x
      case  ${arch} in
         "x86_64")
             export CURRENT_GOARCH="amd64"
@@ -44,7 +42,7 @@ build() {
   export GOOS=$1
   export GOARCH=$2
   go build -ldflags="-s -w" -o bin/upgrade_${GOOS}_${GOARCH} main.go
-  [ -n "$RELEASE" ] || ln -sf bin/upgrade_${GOOS}_${GOARCH} bin/upgrade
+  [ -n "$RELEASE" ] || ln -sf upgrade_${GOOS}_${GOARCH} bin/upgrade
   unset GOOS
   unset GOARCH
   _upx $1 $2

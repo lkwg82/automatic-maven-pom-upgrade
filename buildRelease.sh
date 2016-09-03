@@ -3,4 +3,4 @@
 set -e
 
 export RELEASE="yes"
-./build.sh
+./docker/docker_run.sh
