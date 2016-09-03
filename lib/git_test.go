@@ -136,6 +136,32 @@ func TestGit_BranchCheckoutExisting(t *testing.T) {
 	assert.Equal(t, git.BranchCurrent(), "test")
 }
 
+func TestGit_BranchExistsRmote(t *testing.T) {
+	setup()
+	defer cleanup()
+
+	// remote repository
+	os.Mkdir("remote", 0755)
+	os.Chdir("remote")
+
+	execGit("init")
+	execGit("config", "user.email", "test@ci.com")
+	execGit("config", "user.name", "test")
+	os.Create("test")
+	execGit("add", "test")
+	execGit("commit", "-m", "'test'", "test")
+	execGit("checkout", "-b", "test")
+	parent, _ := os.Getwd()
+
+	// local
+	os.Chdir("..")
+	execGit("clone",parent,"local")
+	os.Chdir("local")
+        git.Fetch()
+
+	assert.True(t, git.BranchExists("test"))
+}
+
 func TestGit_Commit(t *testing.T) {
 	setup()
 	defer cleanup()

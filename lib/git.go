@@ -30,6 +30,10 @@ func (g *Git) IsInstalled() bool {
 	return err == nil
 }
 
+func (g *Git) Fetch(){
+	g.exec("fetch")
+}
+
 func (g *Git) BranchExists(branch string) bool {
 	output, err := g.Command(g.command, "branch", "--list", branch).Output()
 

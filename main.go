@@ -37,6 +37,8 @@ func main() {
 	assert(git.HasRepo(), "need called from a directory, which has a repository")
 	assert(!git.IsDirty(), "repository is dirty, plz commit or reset")
 
+	git.Fetch()
+
 	maven := NewMaven(logger)
 	err := maven.DetermineCommand()
 	if err != nil {
