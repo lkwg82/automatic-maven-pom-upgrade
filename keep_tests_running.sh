@@ -30,8 +30,6 @@ echo
 echo " ---- RUN ---- "
 echo
 
-mkdir -p test
-
 executeProgramm() {
     pushd test && ../bin/upgrade__
     popd
