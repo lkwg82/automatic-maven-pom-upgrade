@@ -19,20 +19,7 @@ func init() {
 	maven = NewMaven(logger)
 }
 
-func TestDetectionOfMavenWrapper(t *testing.T) {
-	setup()
-	defer cleanup()
-
-	content := "#!/bin/sh\necho -n x"
-	ioutil.WriteFile("./mvnw", []byte(content), 0700)
-
-	err := maven.DetermineCommand()
-
-	assert.Nil(t, err)
-	assert.Equal(t, maven.command, "./mvnw")
-}
-
-func TestMavenNotFound(t *testing.T) {
+func TestMaven_NotFound(t *testing.T) {
 	setup()
 	defer cleanup()
 
@@ -43,22 +30,16 @@ func TestMavenNotFound(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestMavenWrapperFound(t *testing.T) {
-	setup()
+func TestMaven_SettingsPathIsMissing(t *testing.T) {
 	defer cleanup()
+	maven := setupWithTestProject(t, "simple-parent-update")
 
-	os.Setenv("PATH", ".")
-	content := "#!/bin/sh\necho -n x"
-	ioutil.WriteFile("mvnw", []byte(content), 0700)
+	err := maven.SettingsPath("x")
 
-	// action
-	err := maven.DetermineCommand()
-
-	assert.Nil(t, err)
-	assert.Equal(t, maven.command, "./mvnw")
+	assert.Error(t, err)
 }
 
-func TestMavenParentPomUpdate(t *testing.T) {
+func TestMaven_UpdateParentPom(t *testing.T) {
 	defer cleanup()
 	maven := setupWithTestProject(t, "simple-parent-update")
 
@@ -70,7 +51,7 @@ func TestMavenParentPomUpdate(t *testing.T) {
 	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
 }
 
-func TestMavenParentPomUpdateTwice(t *testing.T) {
+func TestMaven_UpdateParentPomTwice(t *testing.T) {
 	defer cleanup()
 	maven := setupWithTestProject(t, "simple-parent-update")
 
@@ -82,13 +63,19 @@ func TestMavenParentPomUpdateTwice(t *testing.T) {
 	assert.NotEmpty(t, updateMessage)
 }
 
-func TestMavenSettingsPathIsMissing(t *testing.T) {
+func TestMaven_WrapperFound(t *testing.T) {
+	setup()
 	defer cleanup()
-	maven := setupWithTestProject(t, "simple-parent-update")
 
-	err := maven.SettingsPath("x")
+	os.Setenv("PATH", ".")
+	content := "#!/bin/sh\necho -n x"
+	ioutil.WriteFile("mvnw", []byte(content), 0700)
 
-	assert.Error(t, err)
+	// action
+	err := maven.DetermineCommand()
+
+	assert.Nil(t, err)
+	assert.Equal(t, maven.Exec.Cmd, "./mvnw")
 }
 
 func setupWithTestProject(t *testing.T, testProjectName string) *Maven {

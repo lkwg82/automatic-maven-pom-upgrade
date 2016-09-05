@@ -30,13 +30,8 @@ echo
 echo " ---- RUN ---- "
 echo
 
-executeProgramm() {
-    pushd test && ../bin/upgrade__
-    popd
-}
-
 set +e
-./build.sh && executeProgramm
+./build.sh && bin/upgrade
 set -e
 
 

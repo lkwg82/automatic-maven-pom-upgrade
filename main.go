@@ -12,18 +12,19 @@ import (
 	"path"
 )
 
-var optMavenSettingsPath = goopt.String([]string{"--maven-settings"}, "", "path to maven settings (equivalent to -s)")
-var hookAfterCommit = goopt.String([]string{"--hook-after"}, "/bin/echo", "command to call after commit (commit message is 1st arg)")
-
-var optNoCommit = goopt.Flag([]string{"--no-commit"}, nil, "skip commit", "")
 var optQuiet = goopt.Flag([]string{"-q", "--quiet"}, nil, "suppress any output", "")
 var optType = goopt.Alternatives([]string{"-t", "--type"}, []string{"help", "parent"}, "type of upgrade")
 var optVerbose = goopt.Flag([]string{"-v", "--verbose"}, nil, "output verbosely", "")
 
 var logger golog.Logger
-var hooks = make(map[string]string)
+
+type funcErr func() error
 
 func main() {
+	git := NewGit(logger)
+
+	maven := NewMaven(logger)
+
 	parseParameter()
 
 	if *optType == "help" {
@@ -31,25 +32,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	git := NewGit(logger)
-
-	assert(git.IsInstalled(), "need git to be installed or in the PATH")
-	assert(git.HasRepo(), "need called from a directory, which has a repository")
-	assert(!git.IsDirty(), "repository is dirty, plz commit or reset")
+	exitOnError(git.CheckIsInstalled)
+	exitOnError(git.CheckIsRepo)
+	exitOnError(git.OptionalCheckIsDirty)
 
 	git.Fetch()
 
-	maven := NewMaven(logger)
-	err := maven.DetermineCommand()
-	if err != nil {
-		logger.Emergency(err)
-		os.Exit(1)
-	}
-
-	if err := maven.SettingsPath(*optMavenSettingsPath); err != nil{
-		logger.Emergency(err)
-		os.Exit(1)
-	}
+	exitOnError(maven.DetermineCommand)
+	exitOnError(maven.ParseCommandline)
 
 	switch *optType {
 	case "parent": updateParent(git, maven)
@@ -58,25 +48,19 @@ func main() {
 	}
 }
 
-func updateParent(git *Git, maven *Maven) {
-	changeBranch(git)
-	updated, message, err := maven.UpdateParent()
+func exitOnError(fun funcErr) {
+	err := fun()
 	if err != nil {
-		logger.Errorf("parent update failed: %s", err)
+		logger.Emergency(err)
 		os.Exit(1)
 	}
+}
 
-	if updated {
-		echo("result: " + message)
-		if !*optNoCommit {
-			echo("committing '%s'", message)
-			git.Commit(message)
-			execAfterCommitHook(message)
-		} else {
-			echo("skipping commit")
-		}
+func changeBranch(git *Git) {
+	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {
+		git.BranchCheckoutExisting(branch)
 	} else {
-		echo("update not needed: %s ", message)
+		git.BranchCheckoutNew(branch)
 	}
 }
 
@@ -90,28 +74,20 @@ func echo(format string, arg ...string) {
 	}
 }
 
-func execAfterCommitHook(message string) {
-	echo("executing afterCommitHook")
-	cmd := NewExec(logger)
-	err := cmd.ExecCommand(hooks["afterCommit"], message)
+func updateParent(git *Git, maven *Maven) {
+	changeBranch(git)
+	git.OptionalAutoMergeMaster()
+	updated, message, err := maven.UpdateParent()
 	if err != nil {
-		logger.Error(err);
-		os.Exit(1);
-	}
-}
-
-func changeBranch(git *Git) {
-	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {
-		git.BranchCheckoutExisting(branch)
-	} else {
-		git.BranchCheckoutNew(branch)
-	}
-}
-
-func assert(status bool, hint string) {
-	if !status {
-		logger.Error(hint)
+		logger.Errorf("parent update failed: %s", err)
 		os.Exit(1)
+	}
+
+	if updated {
+		echo("result: " + message)
+		git.OptionalCommit(message, echo)
+	} else {
+		echo("update not needed: %s ", message)
 	}
 }
 
@@ -142,6 +118,4 @@ func parseParameter() {
 	} else {
 		logger = *golog.New(os.Stderr, log.Warning)
 	}
-
-	hooks["afterCommit"] = *hookAfterCommit
 }

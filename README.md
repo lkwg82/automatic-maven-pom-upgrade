@@ -117,6 +117,8 @@ index 47fb9cd..cee402c 100644
 - TODO dependency updates
 - TODO plugin updates
 
+# functionality
+- supports auto merge updates from master into update branch
 
 # development
 
