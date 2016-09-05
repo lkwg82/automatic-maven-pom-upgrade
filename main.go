@@ -10,9 +10,11 @@ import (
 	"bytes"
 	"runtime"
 	"path"
+	"strings"
 )
 
 var optQuiet = goopt.Flag([]string{"-q", "--quiet"}, nil, "suppress any output", "")
+var optVersion = goopt.Flag([]string{"--version"}, nil, "show version", "")
 var optType = goopt.Alternatives([]string{"-t", "--type"}, []string{"help", "parent"}, "type of upgrade")
 var optVerbose = goopt.Flag([]string{"-v", "--verbose"}, nil, "output verbosely", "")
 
@@ -26,6 +28,11 @@ func main() {
 	maven := NewMaven(logger)
 
 	parseParameter()
+
+	if *optVersion {
+		fmt.Printf("version %s\n", goopt.Version)
+		os.Exit(0)
+	}
 
 	if *optType == "help" {
 		fmt.Print(goopt.Usage())
@@ -91,9 +98,21 @@ func updateParent(git *Git, maven *Maven) {
 	}
 }
 
+func version() string {
+	exec := NewExec(logger, "git")
+	output, err := exec.Command("log", "--format=#%h %ai", "-n1").Output()
+	exec.DebugStdoutErr(output, err)
+	if err != nil {
+		logger.Error("have problems determining version")
+		panic(err)
+	}
+	n := len(output)
+	return strings.TrimSpace(string(output[:n]))
+}
+
 func parseParameter() {
-	goopt.Summary = "automatic upgrade maven projects"
-	goopt.Version = "0.1"
+	goopt.Version = version()
+	goopt.Summary = "automatic upgrade maven projects, " + goopt.Version
 	goopt.Parse(nil)
 
 	if *optVerbose {
