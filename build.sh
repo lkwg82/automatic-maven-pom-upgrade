@@ -31,6 +31,9 @@ determineCurrentArch() {
         "x86_64")
             export CURRENT_GOARCH="amd64"
         ;;
+        "i386")
+            export CURRENT_GOARCH="386"
+        ;;
         "unknown")
             echo "falling back to x86_64 architecture"
             export CURRENT_GOARCH="amd64"
@@ -59,6 +62,7 @@ determineCurrentArch
 
 if [ -n "$RELEASE" ]; then
             build darwin amd64
+            build darwin 386
             build linux amd64
 else
     if [ "$CURRENT_GOARCH" == "amd64" ]; then
@@ -66,6 +70,12 @@ else
             build darwin amd64
         elif [ "$CURRENT_GOOS" == "linux" ]; then
             build linux amd64
+        fi
+    elif [ "$CURRENT_GOARCH" == "386" ]; then
+        if [ "$CURRENT_GOOS" == "darwin" ]; then
+            build darwin 386
+        else
+            echo "dont support current os on $CURRENT_GOARCH : $CURRENT_GOOS"
         fi
     else
         echo "dont support current arch: $CURRENT_GOARCH"
