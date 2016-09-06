@@ -61,9 +61,15 @@ determineCurrentOS
 determineCurrentArch
 
 if [ -n "$RELEASE" ]; then
-            build darwin amd64
-            build darwin 386
-            build linux amd64
+            build darwin amd64 &
+            build darwin 386 &
+            build linux amd64 &
+
+            for job in `jobs -p`
+            do
+                echo ${job}
+                wait $job || let "FAIL+=1"
+            done
 else
     if [ "$CURRENT_GOARCH" == "amd64" ]; then
         if [ "$CURRENT_GOOS" == "darwin" ]; then

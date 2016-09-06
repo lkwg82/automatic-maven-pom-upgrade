@@ -166,7 +166,7 @@ func (g *Git) CheckIsRepo() error {
 }
 
 func (g *Git) OptionalCheckIsDirty() error {
-	if !*optGitNoDirtyCheck &&                !g.IsDirty() {
+	if !*optGitNoDirtyCheck && g.IsDirty() {
 		return NewWrapError2("repository is dirty, plz commit or reset")
 	}
 	return nil

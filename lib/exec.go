@@ -50,7 +50,7 @@ func (e *Exec) CommandRun(arg ...string) error {
 	return err
 }
 
-func (e *Exec) CommandRunExitOnErr(arg ...string){
+func (e *Exec) CommandRunExitOnErr(arg ...string) {
 	err := e.CommandRun(arg...)
 	if err != nil {
 		e.logger.Emergency(err)
