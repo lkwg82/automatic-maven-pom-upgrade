@@ -111,7 +111,7 @@ func version() string {
 }
 
 func parseParameter() {
-	goopt.Version = version()
+	goopt.Version = "0.1" //version()
 	goopt.Summary = "automatic upgrade maven projects, " + goopt.Version
 	goopt.Parse(nil)
 
