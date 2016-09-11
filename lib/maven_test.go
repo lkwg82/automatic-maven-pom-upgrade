@@ -48,7 +48,7 @@ func TestMaven_UpdateParentPom(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotZero(t, updateMessage)
 	assert.True(t, updated)
-	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : " + updateMessage)
+	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : "+updateMessage)
 }
 
 func TestMaven_UpdateParentPomTwice(t *testing.T) {

@@ -5,11 +5,14 @@ import (
 	"os"
 )
 
+// TemporaryDirectoryForTests helps to run tests in a temporary directory
+// while not messing up the current working directory afterwards
 type TemporaryDirectoryForTests struct {
 	Cwd           string
 	testDirectory string
 }
 
+// Init saves current working directory for later recovery
 func (t *TemporaryDirectoryForTests) Init() {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -18,6 +21,7 @@ func (t *TemporaryDirectoryForTests) Init() {
 	t.Cwd = cwd
 }
 
+// Setup creates and changes to temporary test directory
 func (t *TemporaryDirectoryForTests) Setup() {
 	if len(t.testDirectory) > 0 {
 		panic("testDirectory is already set: " + t.testDirectory)
@@ -38,6 +42,7 @@ func (t *TemporaryDirectoryForTests) Setup() {
 	t.testDirectory = path
 }
 
+// Cleanup reset the current working directory and cleanup the temporary test directory
 func (t *TemporaryDirectoryForTests) Cleanup() {
 	if _cwd, err := os.Getwd(); err != nil {
 		panic(err)

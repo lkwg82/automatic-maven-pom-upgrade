@@ -4,16 +4,16 @@ import (
 	"github.com/go-errors/errors"
 )
 
-type WrapError struct {
+type wrapError struct {
 	error
 	msg string
 }
 
-func NewWrapError(err error, message string) *WrapError {
+func newWrapError(err error, message string) *wrapError {
 	if err == nil {
 		panic("no nil error allowed")
 	}
-	we := &WrapError{
+	we := &wrapError{
 		error: errors.Wrap(err, 1),
 		msg:   message,
 	}
@@ -25,14 +25,14 @@ func NewWrapError(err error, message string) *WrapError {
 	return we
 }
 
-func NewWrapError2(message string) *WrapError {
-	return NewWrapError(errors.New(message), "")
+func newWrapError2(message string) *wrapError {
+	return newWrapError(errors.New(message), "")
 }
 
-func (w *WrapError) CausedErr() error {
+func (w *wrapError) CausedErr() error {
 	return w.error
 }
 
-func (w *WrapError) string() string {
+func (w *wrapError) string() string {
 	return w.msg
 }

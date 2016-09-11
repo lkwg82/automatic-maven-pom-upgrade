@@ -3,35 +3,38 @@ package lib
 import (
 	"fmt"
 	"github.com/alexcesaro/log/golog"
+	"github.com/droundy/goopt"
 	"os"
 	"os/exec"
 	"strings"
-	"github.com/droundy/goopt"
 )
 
 const (
-	plugin_name = "org.codehaus.mojo:versions-maven-plugin"
-	plugin_version = "2.3"
+	pluginName    = "org.codehaus.mojo:versions-maven-plugin"
+	pluginVersion = "2.3"
 )
 
 var optMavenSettingsPath = goopt.String([]string{"--maven-settings"}, "", "path to maven settings (equivalent to -s)")
 
+// Maven wraps running the external maven command
 type Maven struct {
 	Exec
 	plugin       string
 	settingsPath string
 }
 
+// NewMaven is the construtor for Maven
 func NewMaven(logger golog.Logger) *Maven {
 	maven := &Maven{
-		Exec:Exec{
-			logger:logger,
+		Exec: Exec{
+			logger: logger,
 		},
-		plugin: fmt.Sprintf("%s:%s", plugin_name, plugin_version),
+		plugin: fmt.Sprintf("%s:%s", pluginName, pluginVersion),
 	}
 	return maven
 }
 
+// DetermineCommand decides whether to use a repo-local maven wrapper (mvnw) or a system global maven (mvn) command
 func (m *Maven) DetermineCommand() error {
 	m.logger.Info("determine command")
 	var cmd string
@@ -42,14 +45,14 @@ func (m *Maven) DetermineCommand() error {
 		exec := NewExec(m.logger, cmd)
 		err = exec.CommandRun("--version")
 		if err != nil {
-			return NewWrapError(err, "./mvnw --version")
+			return newWrapError(err, "./mvnw --version")
 		}
 	} else {
 		m.logger.Info("no maven wrapper script found, try mvn from PATH")
 		cmd = "mvn"
 		_, err := exec.LookPath("mvn")
 		if err != nil {
-			return NewWrapError(err, "missing mvn command")
+			return newWrapError(err, "missing mvn command")
 		}
 	}
 
@@ -57,6 +60,7 @@ func (m *Maven) DetermineCommand() error {
 	return nil
 }
 
+// SettingsPath sets a custom settings.xml path to use with maven
 func (m *Maven) SettingsPath(path string) error {
 	m.logger.Debugf("use maven settings path: %s", path)
 	if path == "" {
@@ -66,16 +70,17 @@ func (m *Maven) SettingsPath(path string) error {
 
 	file, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return NewWrapError2("path '" + path + "' is not existing")
+		return newWrapError2("path '" + path + "' is not existing")
 	}
 
 	if file.IsDir() {
-		return NewWrapError2("path '" + path + "' is directory, expected a file")
+		return newWrapError2("path '" + path + "' is directory, expected a file")
 	}
 	m.settingsPath = path
 	return nil
 }
 
+// ParseCommandline parses the command line arguments for some maven options
 func (m *Maven) ParseCommandline() error {
 	if err := m.SettingsPath(*optMavenSettingsPath); err != nil {
 		return err
@@ -83,6 +88,7 @@ func (m *Maven) ParseCommandline() error {
 	return nil
 }
 
+// UpdateParent tries to update the parent pom of the local pom.xml
 func (m *Maven) UpdateParent() (bool, string, error) {
 	m.logger.Info("updating parent")
 	args := []string{m.plugin + ":update-parent", "-DgenerateBackupPoms=false", "--batch-mode"}

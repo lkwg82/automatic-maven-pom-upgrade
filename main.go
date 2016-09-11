@@ -1,15 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/alexcesaro/log"
 	"github.com/alexcesaro/log/golog"
 	"github.com/droundy/goopt"
-	. "github.com/lkwg82/automatic-maven-pom-upgrade/lib"
+	"github.com/lkwg82/automatic-maven-pom-upgrade/lib"
 	"os"
-	"bytes"
-	"runtime"
 	"path"
+	"runtime"
 )
 
 var optQuiet = goopt.Flag([]string{"-q", "--quiet"}, nil, "suppress any output", "")
@@ -25,8 +25,8 @@ func main() {
 
 	parseParameter()
 
-	git := NewGit(logger)
-	maven := NewMaven(logger)
+	git := lib.NewGit(logger)
+	maven := lib.NewMaven(logger)
 
 	if *optVersion {
 		fmt.Printf("version %s\n", goopt.Version)
@@ -48,7 +48,8 @@ func main() {
 	exitOnError(maven.ParseCommandline)
 
 	switch *optType {
-	case "parent": updateParent(git, maven)
+	case "parent":
+		updateParent(git, maven)
 	default:
 		panic("should never reach this point, wrong goopt config")
 	}
@@ -62,7 +63,7 @@ func exitOnError(fun funcErr) {
 	}
 }
 
-func changeBranch(git *Git) {
+func changeBranch(git *lib.Git) {
 	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {
 		git.BranchCheckoutExisting(branch)
 	} else {
@@ -75,12 +76,12 @@ func echo(format string, arg ...string) {
 		if len(arg) == 0 {
 			fmt.Println(format)
 		} else {
-			fmt.Printf(format + "\n", arg)
+			fmt.Printf(format+"\n", arg)
 		}
 	}
 }
 
-func updateParent(git *Git, maven *Maven) {
+func updateParent(git *lib.Git, maven *lib.Maven) {
 	git.OptionalAutoMergeMaster()
 	updated, message, err := maven.UpdateParent()
 	if err != nil {

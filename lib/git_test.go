@@ -4,15 +4,15 @@ import (
 	"github.com/alexcesaro/log"
 	"github.com/alexcesaro/log/golog"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 	"io/ioutil"
-	"time"
+	"os"
 	"strings"
+	"testing"
+	"time"
 )
 
 var (
-	logger golog.Logger
+	logger  golog.Logger
 	git     *Git
 	execGit func(...string) error
 )
@@ -22,7 +22,7 @@ func init() {
 
 	exec := &Exec{
 		logger: logger,
-		Cmd:"git",
+		Cmd:    "git",
 	}
 	execGit = func(args ...string) error {
 		err := exec.CommandRun(args...)

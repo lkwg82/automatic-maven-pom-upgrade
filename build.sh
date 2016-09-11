@@ -6,6 +6,9 @@ set -e
 # syntax check
 bash -n $0
 
+go fmt ./lib/...
+go fmt main.go
+
 if [ -z "$SKIP_TESTS" ]; then
     echo " run tests"
     go test -v ./lib/...
