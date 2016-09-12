@@ -63,14 +63,6 @@ func exitOnError(fun funcErr) {
 	}
 }
 
-func changeBranch(git *lib.Git) {
-	if branch := "autoupdate_" + *optType; git.BranchExists(branch) {
-		git.BranchCheckoutExisting(branch)
-	} else {
-		git.BranchCheckoutNew(branch)
-	}
-}
-
 func echo(format string, arg ...string) {
 	if !*optQuiet {
 		if len(arg) == 0 {
@@ -82,7 +74,12 @@ func echo(format string, arg ...string) {
 }
 
 func updateParent(git *lib.Git, maven *lib.Maven) {
-	git.OptionalAutoMergeMaster()
+	updateBranch := "autoupdate_" + *optType
+	if git.BranchExists(updateBranch) {
+		git.BranchCheckoutExisting(updateBranch)
+		git.OptionalAutoMergeMaster()
+	}
+
 	updated, message, err := maven.UpdateParent()
 	if err != nil {
 		logger.Errorf("parent update failed: %s", err)
@@ -91,8 +88,10 @@ func updateParent(git *lib.Git, maven *lib.Maven) {
 
 	if updated {
 		echo("result: " + message)
+		if !git.BranchExists(updateBranch) && git.BranchCurrent() != updateBranch {
+			git.BranchCheckoutNew(updateBranch)
+		}
 		git.OptionalCommit(message, echo)
-		changeBranch(git)
 	} else {
 		echo("update not needed: %s ", message)
 	}

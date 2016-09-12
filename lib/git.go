@@ -184,7 +184,7 @@ func (g *Git) CheckIsRepo() error {
 
 // OptionalCheckIsDirty returns on optional error if git repository is dirty, it dependends on the cmd args
 func (g *Git) OptionalCheckIsDirty() error {
-	if !*optGitNoDirtyCheck && !g.IsDirty() {
+	if !*optGitNoDirtyCheck && g.IsDirty() {
 		return newWrapError2("repository is dirty, plz commit or reset")
 	}
 	return nil
