@@ -71,7 +71,7 @@ func (e *Exec) DebugErr(err error) {
 	}
 }
 
-//  DebugStdout outputs bytes in debug log
+// DebugStdout outputs bytes in debug log
 func (e *Exec) DebugStdout(output []byte) {
 	if e.logger.LogDebug() {
 		e.copyToLog(bytes.NewReader(output), "stdout")
