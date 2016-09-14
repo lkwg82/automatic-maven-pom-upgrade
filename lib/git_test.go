@@ -114,7 +114,7 @@ func TestGit_BranchExistsNotOnBranch(t *testing.T) {
 	assert.True(t, git.BranchExists("test"))
 }
 
-func TestGit_BranchExistsRmote(t *testing.T) {
+func TestGit_BranchExistsRemote(t *testing.T) {
 	setup()
 	defer cleanup()
 
@@ -129,13 +129,13 @@ func TestGit_BranchExistsRmote(t *testing.T) {
 	execGit("add", "test")
 	execGit("commit", "-m", "'test'", "test")
 	execGit("checkout", "-b", "test")
+	execGit("checkout", "master")
 	parent, _ := os.Getwd()
 
 	// local
 	os.Chdir("..")
 	execGit("clone", parent, "local")
 	os.Chdir("local")
-	git.Fetch()
 
 	assert.True(t, git.BranchExists("test"))
 }

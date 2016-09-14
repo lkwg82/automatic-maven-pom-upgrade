@@ -42,8 +42,6 @@ func main() {
 	exitOnError(git.CheckIsRepo)
 	exitOnError(git.OptionalCheckIsDirty)
 
-	git.Fetch()
-
 	exitOnError(maven.DetermineCommand)
 	exitOnError(maven.ParseCommandline)
 

@@ -55,7 +55,7 @@ func (g *Git) BranchCurrent() string {
 
 // BranchExists detects if given branch exists
 func (g *Git) BranchExists(branch string) bool {
-	output, err := g.Command("branch", "--list", branch).Output()
+	output, err := g.Command("branch", "--list", "--all", "*"+branch).Output()
 	g.DebugStdoutErr(output, err)
 
 	n := len(output)
@@ -67,7 +67,11 @@ func (g *Git) BranchExists(branch string) bool {
 		os.Exit(1)
 	}
 
-	return lines[0] == "* "+branch || lines[0] == branch
+	isCurrentBranch := lines[0] == "* "+branch
+	isLocalBranch := lines[0] == branch
+	isRemoteBranch := lines[0] == "remotes/origin/"+branch
+	g.logger.Debugf("isCurrentBranch:%t, isLocalBranch:%t, isRemoteBranch: %t", isCurrentBranch, isLocalBranch, isRemoteBranch)
+	return isCurrentBranch || isLocalBranch || isRemoteBranch
 }
 
 // Commit perform a git commit with a given message
@@ -84,11 +88,6 @@ func (g *Git) DominantMergeFrom(branch, message string) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-// Fetch perform a git fetch
-func (g *Git) Fetch() {
-	g.CommandRunExitOnErr("fetch")
 }
 
 // HasMergeConflict detects if merging a given branch into current would result merge conflicts

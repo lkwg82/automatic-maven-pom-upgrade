@@ -101,7 +101,7 @@ func (m *Maven) UpdateParent() (bool, string, error) {
 	if err != nil {
 		n := len(output)
 		m.logger.Error("something failed: %s\n %s", err, string(output[:n]))
-		panic("something went wrong")
+		os.Exit(1)
 	}
 
 	n := len(output)
