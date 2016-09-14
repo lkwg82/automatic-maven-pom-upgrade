@@ -4,7 +4,7 @@ set -ex
 
 bash -n $0
 
-DOCKER_CONTAINER=$(docker build docker | tail -n1 | cut -d\  -f3)
+DOCKER_CONTAINER=$(docker build --rm docker | tail -n1 | cut -d\  -f3)
 project=src/github.com/lkwg82/automatic-maven-pom-upgrade
 
 docker run -v $(pwd):/go/${project} \

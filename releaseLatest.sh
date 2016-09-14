@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-#set -x
+set -x
 
 go get github.com/aktau/github-release
 
@@ -13,8 +13,8 @@ function tool() {
 
 tool delete || echo "no latest release yet"
 
-DESCRIPTION=$(echo -n "will_be_released_with_each_successful_commit__${TRAVIS_COMMIT} at ${TRAVIS_STACK_TIMESTAMP}" | sed -e 's# #_#g')
+DESCRIPTION=$(echo -n "will_be_released_with_each_successful_commit_on_master_$(git rev-parse HEAD) at $(date)" | sed -e 's# #_#g')
 tool release --pre-release --description ${DESCRIPTION}
 tool upload --name upgrade_linux_amd64 -f bin/upgrade_linux_amd64
 tool upload --name upgrade_darwin_amd64 -f bin/upgrade_darwin_amd64
-tool upload --name upgrade_darwin_amd64 -f bin/upgrade_darwin_386
+tool upload --name upgrade_darwin_386 -f bin/upgrade_darwin_386

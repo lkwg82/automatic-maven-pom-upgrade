@@ -96,7 +96,7 @@ func updateParent(git *lib.Git, maven *lib.Maven) {
 }
 
 func parseParameter() {
-	goopt.Version = "0.1"
+	goopt.Version = "0.3-SNAPSHOT"
 	goopt.Summary = "automatic upgrade maven projects, " + goopt.Version
 	goopt.Parse(nil)
 

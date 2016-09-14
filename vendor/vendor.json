@@ -3,6 +3,12 @@
 	"ignore": "",
 	"package": [
 		{
+			"checksumSHA1": "6l64b5lu0GZKmvFVHisHtTBa5Js=",
+			"path": "github.com/aktau/github-release",
+			"revision": "d07a13c0654a97d73d2e7f6a871b5ad3b4a014e5",
+			"revisionTime": "2015-08-30T20:17:57Z"
+		},
+		{
 			"checksumSHA1": "0nlCYGveus21+QrbtmHE84r28wg=",
 			"path": "github.com/alexcesaro/log",
 			"revision": "61e686294e58a8698a9e1091268bb4ac1116bd5e",
