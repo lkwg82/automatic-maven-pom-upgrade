@@ -66,8 +66,13 @@ func (e *Exec) CommandRunExitOnErr(arg ...string) {
 // DebugErr outputs error in debug log
 func (e *Exec) DebugErr(err error) {
 	if err != nil {
-		exitError := err.(*exec.ExitError)
-		e.logger.Debugf(" exit code: %s ", exitError.Error())
+		switch err.(type) {
+		case *exec.ExitError:
+			exitError := err.(*exec.ExitError)
+			e.logger.Debugf(" exit code: %s ", exitError.Error())
+		default:
+			e.logger.Debugf(" error %s", err)
+		}
 	}
 }
 

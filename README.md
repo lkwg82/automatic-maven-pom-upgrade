@@ -131,6 +131,16 @@ index 47fb9cd..cee402c 100644
 # functionality
 - supports auto merge updates from master into update branch
 
+# hooks
+## afterCommitHook
+
+sets environmental variable `AUTOUPGRADE_NOTIFICATION_EMAIL=<your-email>` before execution when `.autoupgrade.yml` contains
+ 
+```yaml
+notifications:
+    email: <your-email>
+```
+
 # development
 
 ## requirements

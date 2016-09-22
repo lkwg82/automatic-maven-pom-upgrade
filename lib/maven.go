@@ -25,13 +25,12 @@ type Maven struct {
 
 // NewMaven is the construtor for Maven
 func NewMaven(logger golog.Logger) *Maven {
-	maven := &Maven{
+	return &Maven{
 		Exec: Exec{
 			logger: logger,
 		},
 		plugin: fmt.Sprintf("%s:%s", pluginName, pluginVersion),
 	}
-	return maven
 }
 
 // DetermineCommand decides whether to use a repo-local maven wrapper (mvnw) or a system global maven (mvn) command

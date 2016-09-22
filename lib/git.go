@@ -16,15 +16,17 @@ var optHookAfterCommit = goopt.String([]string{"--hook-after"}, "/bin/echo", "co
 // Git wraps git command execution
 type Git struct {
 	Exec
+	config *Config
 }
 
 // NewGit constructs new Git
-func NewGit(logger golog.Logger) *Git {
+func NewGit(logger golog.Logger, config *Config) *Git {
 	git := &Git{
 		Exec: Exec{
 			logger: logger,
 			Cmd:    "git",
 		},
+		config: config,
 	}
 	return git
 }
@@ -191,17 +193,33 @@ func (g *Git) OptionalCheckIsDirty() error {
 
 // OptionalCommit does a optional commit, it dependends on the cmd args
 func (g *Git) OptionalCommit(message string, echo func(string, ...string)) {
-	if !*optNoCommit {
-		echo("committing '%s'", message)
-		g.Commit(message)
-		echo("executing afterCommitHook")
-		g.execAfterCommitHook(message)
-	} else {
+	if *optNoCommit {
 		echo("skipping commit")
+		return
 	}
+
+	g.logger.Debugf("checking afterCommitHook '%s'", *optHookAfterCommit)
+	_, err := exec.LookPath(*optHookAfterCommit)
+
+	if err != nil {
+		g.logger.Error("failed %s", err)
+		os.Exit(1)
+	}
+
+	echo("committing '%s'", message)
+	g.Commit(message)
+
+	echo("executing afterCommitHook: %s", *optHookAfterCommit)
+	g.execAfterCommitHook(message)
 }
 
 func (g *Git) execAfterCommitHook(message string) {
+	if g.config.Notification.Email != "" {
+		key := "AUTOUPGRADE_NOTIFICATION_EMAIL"
+		email := g.config.Notification.Email
+		g.logger.Debugf("set email in ENV %s:%s", key, email)
+		os.Setenv(key, email)
+	}
 	cmd := NewExec(g.logger, *optHookAfterCommit)
 	cmd.CommandRunExitOnErr(message)
 }

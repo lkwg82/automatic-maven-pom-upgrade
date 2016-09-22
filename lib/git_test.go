@@ -14,6 +14,7 @@ import (
 var (
 	logger  golog.Logger
 	git     *Git
+	config  *Config
 	execGit func(...string) error
 )
 
@@ -31,7 +32,8 @@ func init() {
 		}
 		panic(err)
 	}
-	git = NewGit(logger)
+	config = &Config{}
+	git = NewGit(logger, config)
 }
 
 func TestGit_IsInstalled(t *testing.T) {
@@ -283,6 +285,30 @@ func TestGit_MergeMasterIntoBranchWithConflict(t *testing.T) {
 	n := len(output)
 	content := strings.TrimSpace(string(output[:n]))
 	assert.Equal(t, "afafd", content)
+}
+
+func TestGit_OptionalCommit(t *testing.T) {
+	setup()
+	defer func() {
+		cleanup()
+		config.Notification.Email = ""
+	}()
+
+	createRepoWithSingleCommit()
+
+	_, err := os.Create("pom.xml")
+	if err != nil {
+		panic(err)
+	}
+
+	config.Notification.Email = "x@x.de"
+	git.OptionalCommit("initial update", func(x string, args ...string) {})
+
+	email, found := os.LookupEnv("AUTOUPGRADE_NOTIFICATION_EMAIL")
+
+	assert.True(t, found, "not email in env found")
+	assert.Equal(t, email, config.Notification.Email)
+	assert.False(t, git.IsDirty())
 }
 
 func createRepoWithSingleCommit() {

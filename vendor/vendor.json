@@ -27,6 +27,12 @@
 			"revisionTime": "2015-09-15T19:59:37Z"
 		},
 		{
+			"checksumSHA1": "WOY645oaOR6NqP38Yk/ApjNK63U=",
+			"path": "github.com/cloudfoundry-incubator/candiedyaml",
+			"revision": "99c3df83b51532e3615f851d8c2dbb638f5313bf",
+			"revisionTime": "2016-04-29T08:01:25Z"
+		},
+		{
 			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
 			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
@@ -38,6 +44,12 @@
 			"path": "github.com/droundy/goopt",
 			"revision": "e5c9ab183a102ef3ad2363b04483784258984157",
 			"revisionTime": "2015-10-12T15:57:52Z"
+		},
+		{
+			"checksumSHA1": "tlamwNO+LGDdSX97T+EtBrjA07E=",
+			"path": "github.com/ghodss/yaml",
+			"revision": "aa0c862057666179de291b67d9f093d12b5a8473",
+			"revisionTime": "2016-06-04T00:29:25Z"
 		},
 		{
 			"checksumSHA1": "GMRXftJcIcFOvY7e8TpHvT3GJpE=",

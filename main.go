@@ -25,7 +25,12 @@ func main() {
 
 	parseParameter()
 
-	git := lib.NewGit(logger)
+	config, err := lib.NewConfigReader(logger).ReadConfig()
+	if err != nil {
+		logger.Error("failed to read config: %s", err)
+		os.Exit(1)
+	}
+	git := lib.NewGit(logger, config)
 	maven := lib.NewMaven(logger)
 
 	if *optVersion {
