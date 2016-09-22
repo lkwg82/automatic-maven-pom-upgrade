@@ -5,8 +5,7 @@
 automatic-maven-pom-upgrade
 ===========================
 
-bot which upgrades dependencies (parent-pom)
-
+bot which upgrades maven dependencies
 
 # idea
 
