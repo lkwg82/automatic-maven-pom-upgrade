@@ -44,56 +44,88 @@ export PATH=~/bin:$PATH
 # check if accessible
 $ upgrade
 Usage of upgrade:
-	automatic upgrade maven projects
+        automatic upgrade maven projects, 0.3
 Options:
-  -v  --verbose               output verbosely
-      --hook-after=/bin/echo  command to call after commit (commit message is 1st arg)
-      --type=[help|parent]    type of upgrade
-  -h  --help                  Show usage message
+                    --git-no-update         skip automerge updates from master
+                    --git-no-dirty-check    skip dirty check
+                    --git-no-commit         skip commit
+                    --hook-after=/bin/echo  command to call after commit (commit message is 1st arg)
+                    --maven-settings=       path to maven settings (equivalent to -s)
+  -q                --quiet                 suppress any output
+                    --version               show version
+  -t [help|parent]  --type=[help|parent]    type of upgrade
+  -v                --verbose               output verbosely
+  -h                --help                  Show usage message
+
    
 # go to test project
 $ cd test-projects/simple-parent-update/
 $ upgrade --type=parent -v
-2016-08-29 23:18:27.377 DEBUG [exec.go:27 executing: git status]
-2016-08-29 23:18:27.378 DEBUG [exec.go:27 executing: git status --porcelain]
-2016-08-29 23:18:27.379 INFO [maven.go:31 determine command]
-2016-08-29 23:18:27.379 INFO [maven.go:34 maven wrapper script found]
-2016-08-29 23:18:27.379 DEBUG [exec.go:27 executing: ./mvnw --version]
-2016-08-29 23:18:27.467 DEBUG [exec.go:41 Apache Maven 3.3.3 (7994120775791599e205a5524ec3e0dfe41d4a06; 2015-04-22T13:57:37+02:00)]
-2016-08-29 23:18:27.467 DEBUG [exec.go:41 Maven home: /home/lars/.m2/wrapper/dists/apache-maven-3.3.3-bin/3opbjp6rgl6qp7k2a6tljcpvgp/apache-maven-3.3.3]
-2016-08-29 23:18:27.467 DEBUG [exec.go:41 Java version: 1.8.0_91, vendor: Oracle Corporation]
-2016-08-29 23:18:27.467 DEBUG [exec.go:41 Java home: /usr/lib/jvm/java-8-openjdk-amd64/jre]
-2016-08-29 23:18:27.467 DEBUG [exec.go:41 Default locale: de_DE, platform encoding: UTF-8]
-2016-08-29 23:18:27.467 DEBUG [exec.go:41 OS name: "linux", version: "4.2.0-42-generic", arch: "amd64", family: "unix"]
-2016-08-29 23:18:27.470 DEBUG [exec.go:27 executing: git branch --list autoupdate_parent]
-2016-08-29 23:18:27.470 DEBUG [git.go:41 output ]
-2016-08-29 23:18:27.470 DEBUG [exec.go:27 executing: git checkout -b autoupdate_parent]
-2016-08-29 23:18:27.471 DEBUG [exec.go:41 Zu neuem Branch 'autoupdate_parent' gewechselt]
-2016-08-29 23:18:27.472 INFO [maven.go:56 updating parent]
-2016-08-29 23:18:27.472 DEBUG [exec.go:27 executing: ./mvnw org.codehaus.mojo:versions-maven-plugin:2.3:update-parent -DgenerateBackupPoms=false --batch-mode]
-2016-08-29 23:18:28.638 DEBUG [maven.go:75 [INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building test 1.3.7.RELEASE
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- versions-maven-plugin:2.3:update-parent (default-cli) @ test ---
-[INFO] Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 0.604 s
-[INFO] Finished at: 2016-08-29T23:18:28+02:00
-[INFO] Final Memory: 15M/286M
-[INFO] ------------------------------------------------------------------------
-]
-2016-08-29 23:18:28.638 INFO [maven.go:80 updated: Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE]
-2016-08-29 23:18:28.639 DEBUG [exec.go:27 executing: git add pom.xml]
-2016-08-29 23:18:28.640 DEBUG [exec.go:27 executing: git commit -m 'Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE' pom.xml]
-2016-08-29 23:18:28.641 DEBUG [exec.go:41 [autoupdate_parent 392d679] 'Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE']
-2016-08-29 23:18:28.641 DEBUG [exec.go:41  1 file changed, 1 insertion(+), 1 deletion(-)]
-2016-08-29 23:18:28.641 DEBUG [exec.go:27 executing: /bin/echo Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE]
-2016-08-29 23:18:28.641 DEBUG [exec.go:41 Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE]
+2016-09-22 22:20:12.820 DEBUG [main.go:128 running in verbose mode]
+2016-09-22 22:20:12.820 DEBUG [main.go:129  type: parent]
+2016-09-22 22:20:12.820 DEBUG [config.go:30 looking for config file '.autoupgrade.yml']
+2016-09-22 22:20:12.820 DEBUG [config.go:33 looking for config file '.autoupgrade.yaml']
+2016-09-22 22:20:12.820 DEBUG [config.go:35 no config file found]
+2016-09-22 22:20:12.820 DEBUG [exec.go:34 call from: (*Git).CheckIsRepo-fm -> (*Git).CheckIsRepo -> (*Git).IsRepo ]
+2016-09-22 22:20:12.820 DEBUG [exec.go:35 executing: git status]
+2016-09-22 22:20:12.827 INFO [maven.go:38 determine command]
+2016-09-22 22:20:12.827 INFO [maven.go:41 maven wrapper script found]
+2016-09-22 22:20:12.827 DEBUG [exec.go:34 call from: (*Maven).DetermineCommand-fm -> (*Maven).DetermineCommand ]
+2016-09-22 22:20:12.827 DEBUG [exec.go:35 executing: ./mvnw --version]
+2016-09-22 22:20:13.108 DEBUG [exec.go:104    stdout: Apache Maven 3.3.3 (7994120775791599e205a5524ec3e0dfe41d4a06; 2015-04-22T13:57:37+02:00)]
+2016-09-22 22:20:13.108 DEBUG [exec.go:104    stdout: Maven home: /Users/lars.gohlke/.m2/wrapper/dists/apache-maven-3.3.3-bin/3opbjp6rgl6qp7k2a6tljcpvgp/apache-maven-3.3.3]
+2016-09-22 22:20:13.108 DEBUG [exec.go:104    stdout: Java version: 1.8.0_73, vendor: Oracle Corporation]
+2016-09-22 22:20:13.108 DEBUG [exec.go:104    stdout: Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home/jre]
+2016-09-22 22:20:13.108 DEBUG [exec.go:104    stdout: Default locale: de_DE, platform encoding: UTF-8]
+2016-09-22 22:20:13.108 DEBUG [exec.go:104    stdout: OS name: "mac os x", version: "10.11.6", arch: "x86_64", family: "mac"]
+2016-09-22 22:20:13.111 DEBUG [maven.go:64 use maven settings path: ]
+2016-09-22 22:20:13.111 DEBUG [maven.go:66 ignoring empty settings path]
+2016-09-22 22:20:13.112 DEBUG [exec.go:34 call from: (*Git).BranchExists ]
+2016-09-22 22:20:13.112 DEBUG [exec.go:35 executing: git branch --list --all *autoupdate_parent]
+2016-09-22 22:20:13.123 DEBUG [git.go:75 isCurrentBranch:false, isLocalBranch:false, isRemoteBranch: false]
+2016-09-22 22:20:13.123 INFO [maven.go:92 updating parent]
+2016-09-22 22:20:13.123 DEBUG [exec.go:34 call from: (*Maven).UpdateParent ]
+2016-09-22 22:20:13.123 DEBUG [exec.go:35 executing: ./mvnw org.codehaus.mojo:versions-maven-plugin:2.3:update-parent -DgenerateBackupPoms=false --batch-mode]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] Scanning for projects...]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO]                                                                         ]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] ------------------------------------------------------------------------]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] Building test 1.3.7.RELEASE]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] ------------------------------------------------------------------------]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] ]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] --- versions-maven-plugin:2.3:update-parent (default-cli) @ test ---]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] ------------------------------------------------------------------------]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] BUILD SUCCESS]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] ------------------------------------------------------------------------]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] Total time: 1.081 s]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] Finished at: 2016-09-22T22:20:15+02:00]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] Final Memory: 14M/309M]
+2016-09-22 22:20:15.232 DEBUG [exec.go:104    stdout: [INFO] ------------------------------------------------------------------------]
+2016-09-22 22:20:15.232 INFO [maven.go:116 updated: Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE]
+result: Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE
+2016-09-22 22:20:15.233 DEBUG [exec.go:34 call from: (*Git).BranchExists ]
+2016-09-22 22:20:15.233 DEBUG [exec.go:35 executing: git branch --list --all *autoupdate_parent]
+2016-09-22 22:20:15.240 DEBUG [git.go:75 isCurrentBranch:false, isLocalBranch:false, isRemoteBranch: false]
+2016-09-22 22:20:15.240 DEBUG [exec.go:34 call from: (*Git).BranchCurrent ]
+2016-09-22 22:20:15.240 DEBUG [exec.go:35 executing: git symbolic-ref --short HEAD]
+2016-09-22 22:20:15.244 DEBUG [exec.go:104    stdout: yaml-configuration]
+2016-09-22 22:20:15.244 DEBUG [exec.go:34 call from: (*Git).BranchCheckoutNew ]
+2016-09-22 22:20:15.244 DEBUG [exec.go:35 executing: git checkout -b autoupdate_parent]
+2016-09-22 22:20:15.294 DEBUG [exec.go:104    stderr: Switched to a new branch 'autoupdate_parent']
+2016-09-22 22:20:15.295 DEBUG [exec.go:104    stdout: M main.go]
+2016-09-22 22:20:15.295 DEBUG [exec.go:104    stdout: M test-projects/simple-parent-update/pom.xml]
+2016-09-22 22:20:15.295 DEBUG [git.go:201 checking afterCommitHook '/bin/echo']
+committing '[Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE]'
+2016-09-22 22:20:15.295 DEBUG [exec.go:34 call from: (*Git).OptionalCommit -> (*Git).Commit ]
+2016-09-22 22:20:15.295 DEBUG [exec.go:35 executing: git add pom.xml]
+2016-09-22 22:20:15.305 DEBUG [exec.go:34 call from: (*Git).OptionalCommit -> (*Git).Commit ]
+2016-09-22 22:20:15.305 DEBUG [exec.go:35 executing: git commit -m 'Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE' pom.xml]
+2016-09-22 22:20:15.331 DEBUG [exec.go:104    stdout: [autoupdate_parent bf4388d] 'Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE']
+2016-09-22 22:20:15.331 DEBUG [exec.go:104    stdout:  1 file changed, 1 insertion(+), 1 deletion(-)]
+executing afterCommitHook: [/bin/echo]
+2016-09-22 22:20:15.332 DEBUG [exec.go:34 call from: (*Git).OptionalCommit -> (*Git).execAfterCommitHook ]
+2016-09-22 22:20:15.332 DEBUG [exec.go:35 executing: /bin/echo Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE]
+2016-09-22 22:20:15.335 DEBUG [exec.go:104    stdout: Updating parent from 1.3.7.RELEASE to 1.4.1.RELEASE]
    
 # see the line with  
 #   Updating parent from 1.3.7.RELEASE to 1.4.0.RELEASE
@@ -130,6 +162,17 @@ index 47fb9cd..cee402c 100644
 
 # functionality
 - supports auto merge updates from master into update branch
+
+# configuration
+
+inspired by `.travis.yml` it should be in a file named `.autoupgrade.yml`
+
+```yaml
+# configuration for https://github.com/lkwg82/automatic-maven-pom-upgrade
+
+notifications:
+    email: <your-email>
+```
 
 # hooks
 ## afterCommitHook
