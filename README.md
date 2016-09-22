@@ -11,6 +11,17 @@ bot which upgrades dependencies (parent-pom)
 # idea
 
 Having a bot which automatically try to find new dependencies. If it finds some updates, it will update the `pom.xml` and commit on a branch.
+
+# scope
+**goals**
+- assisted updates
+- local git integration (branch/commit/merge)
+
+**non-goals**
+- fully managed automatic update
+- automatic test suite execution to verify update
+- git remote interaction (push/pull)
+
         
 # Requirements
 - git installed
