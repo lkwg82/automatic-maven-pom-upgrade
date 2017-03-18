@@ -92,7 +92,11 @@ func (g *Git) DominantMergeFrom(branch, message string) {
 	}
 }
 
-// HasMergeConflict detects if merging a given branch into current would result merge conflicts
+// Fetch fetches from upstream repository
+func (g *Git) Fetch() {
+	g.CommandRunExitOnErr("fetch")
+}
+
 func (g *Git) HasMergeConflict(branch string) (result bool) {
 	output, err := g.Command("merge", "--no-commit", branch).CombinedOutput()
 	g.DebugStdoutErr(output, err)
