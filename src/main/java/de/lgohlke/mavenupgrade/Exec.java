@@ -7,6 +7,7 @@ import org.apache.commons.exec.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -22,6 +23,7 @@ public class Exec {
     public Exec(String command, Path workingDirectory) {
         this.command = command;
         this.workingDirectory = workingDirectory;
+        log.debug("working directory: {}", workingDirectory.toString());
     }
 
     public Exec.Result exec(String... args) {
@@ -29,8 +31,13 @@ public class Exec {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+        CombinedOutputStream out1 = new CombinedOutputStream(out, "Stdout");
+        CombinedOutputStream err1 = new CombinedOutputStream(err, "Stderr");
+
+        PumpStreamHandler streamHandler = new PumpStreamHandler(out1, err1);
+
         DefaultExecutor executor = new DefaultExecutor();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(out, err);
         executor.setStreamHandler(streamHandler);
 
         CommandLine commandLine = CommandLine.parse(command + " " + String.join(" ", args));
@@ -51,6 +58,24 @@ public class Exec {
         String[] stdoutLines = out.toString().split("\n");
         String[] stderrLines = err.toString().split("\n");
         return new Result(stdoutLines, stderrLines, exitCode, commandNotFound, executeResultHandler.getException());
+    }
+
+    @RequiredArgsConstructor
+    private static class CombinedOutputStream extends OutputStream {
+        private final OutputStream stream;
+        private final String prefix;
+
+        private StringBuffer buffer = new StringBuffer();
+
+        @Override
+        public void write(int b) throws IOException {
+            if (b == '\n') {
+                log.debug("  {} {}" ,prefix, buffer.toString().trim());
+                buffer = new StringBuffer();
+            }
+            buffer.append((char)b);
+            stream.write(b);
+        }
     }
 
     @RequiredArgsConstructor
