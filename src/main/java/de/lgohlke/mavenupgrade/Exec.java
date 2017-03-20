@@ -26,6 +26,16 @@ public class Exec {
         log.debug("working directory: {}", workingDirectory.toString());
     }
 
+    protected Result execExitOnError(String... args) {
+        Result result = exec(args);
+        if (result.hasError()) {
+            String lines = result.combinedOutput();
+            log.error(lines,new Exception("failed"));
+            System.exit(1);
+        }
+        return result;
+    }
+
     public Exec.Result exec(String... args) {
         log.debug("executing: {} {}", command, String.join(" ", args));
 
@@ -55,6 +65,8 @@ public class Exec {
 
         boolean commandNotFound = exitCode == Executor.INVALID_EXITVALUE;
 
+        log.debug("  - exitcode: {}", exitCode);
+
         String[] stdoutLines = out.toString().split("\n");
         String[] stderrLines = err.toString().split("\n");
         return new Result(stdoutLines, stderrLines, exitCode, commandNotFound, executeResultHandler.getException());
@@ -70,10 +82,10 @@ public class Exec {
         @Override
         public void write(int b) throws IOException {
             if (b == '\n') {
-                log.debug("  {} {}" ,prefix, buffer.toString().trim());
+                log.debug("  {} {}", prefix, buffer.toString().trim());
                 buffer = new StringBuffer();
             }
-            buffer.append((char)b);
+            buffer.append((char) b);
             stream.write(b);
         }
     }
@@ -86,5 +98,22 @@ public class Exec {
         private final int exitCode;
         private final boolean commandNotFound;
         private final Exception exception;
+
+        public String getStderrLines() {
+            return String.join("\n", stderr);
+        }
+
+        public String getStdoutLines() {
+            return String.join("\n", stdout);
+        }
+
+        public String combinedOutput() {
+            String stdoutLines = getStdoutLines();
+            return (stdoutLines.isEmpty() ? "" : (stdoutLines + "\n")) + getStderrLines();
+        }
+
+        public boolean hasError() {
+            return exitCode != 0;
+        }
     }
 }
