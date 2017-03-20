@@ -7,11 +7,10 @@ import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExecTest {
-    private final Exec exec = new Exec();
 
     @Test
     public void shouldExecuteCommandEcho() {
-        Exec.Result result = exec.exec("echo test");
+        Exec.Result result = new Exec("echo").exec("test");
 
         assertThat(result.getExitCode()).isEqualTo(0);
         assertThat(result.getStdout()).hasSize(1);
@@ -20,23 +19,23 @@ public class ExecTest {
 
     @Test
     public void shouldFailExecuteOnUnknownCommand() {
-        Exec.Result result = exec.exec("xxx test");
+        Exec.Result result = new Exec("xxx").exec("test");
 
         assertThat(result.isCommandNotFound()).isTrue();
     }
 
     @Test
     public void shouldExecuteCommandReturnsExitCode1() {
-        Exec.Result result = exec.exec("test -f test");
+        Exec.Result result = new Exec("test").exec("-f", "test");
 
         assertThat(result.getExitCode()).isEqualTo(1);
     }
 
     @Test
     public void shouldExecuteInGivenDirectory() {
-        Exec exec = new Exec(Paths.get("/tmp"));
+        Exec exec = new Exec("pwd", Paths.get("/tmp"));
 
-        Exec.Result result = exec.exec("pwd");
+        Exec.Result result = exec.exec();
 
         assertThat(result.getStdout()[0]).isEqualTo("/tmp");
     }

@@ -11,15 +11,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Slf4j
-@RequiredArgsConstructor
 public class Exec {
+    private final String command;
     private final Path workingDirectory;
 
-    public Exec() {
-        this(Paths.get(System.getProperty("user.dir")));
+    public Exec(String command) {
+        this(command, Paths.get(System.getProperty("user.dir")));
     }
 
-    public Result exec(String command, String... args) {
+    public Exec(String command, Path workingDirectory) {
+        this.command = command;
+        this.workingDirectory = workingDirectory;
+    }
+
+    public Exec.Result exec(String... args) {
         log.debug("executing: {} {}", command, String.join(" ", args));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
