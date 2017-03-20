@@ -32,8 +32,8 @@ public class Exec {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
 
-        CombinedOutputStream out1 = new CombinedOutputStream(out, "Stdout");
-        CombinedOutputStream err1 = new CombinedOutputStream(err, "Stderr");
+        CombinedOutputStream out1 = new CombinedOutputStream(out, "OUT");
+        CombinedOutputStream err1 = new CombinedOutputStream(err, "ERR");
 
         PumpStreamHandler streamHandler = new PumpStreamHandler(out1, err1);
 
