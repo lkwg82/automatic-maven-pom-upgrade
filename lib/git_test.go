@@ -282,8 +282,7 @@ func TestGit_MergeMasterIntoBranchWithConflict(t *testing.T) {
 
 	assert.True(t, git.IsInSyncWith("master"))
 	output, _ := ioutil.ReadFile("test")
-	n := len(output)
-	content := strings.TrimSpace(string(output[:n]))
+	content := strings.TrimSpace(string(output[:]))
 	assert.Equal(t, "afafd", content)
 }
 

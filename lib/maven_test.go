@@ -51,6 +51,18 @@ func TestMaven_UpdateParentPom(t *testing.T) {
 	assert.True(t, strings.HasPrefix(updateMessage, "Updating parent from 1.3.7.RELEASE to "), "but was : "+updateMessage)
 }
 
+func TestMaven_NoUpdateParentPom(t *testing.T) {
+	defer cleanup()
+	maven := setupWithTestProject(t, "no-parent-update")
+
+	updated, updateMessage, err := maven.UpdateParent()
+
+	assert.Nil(t, err)
+	assert.NotZero(t, updateMessage)
+	assert.False(t, updated)
+	assert.Equal(t, "Current version of org.sonatype.oss:oss-parent:pom:7 is the latest.", updateMessage, "but was : "+updateMessage)
+}
+
 func TestMaven_UpdateParentPomTwice(t *testing.T) {
 	defer cleanup()
 	maven := setupWithTestProject(t, "simple-parent-update")

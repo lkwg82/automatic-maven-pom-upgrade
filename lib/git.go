@@ -50,8 +50,7 @@ func (g *Git) BranchCurrent() string {
 		os.Exit(1)
 	}
 
-	n := len(output)
-	lines := strings.Split(string(output[:n]), "\n")
+	lines := strings.Split(string(output[:]), "\n")
 	return strings.Replace(lines[0], "refs/heads/", "", 0)
 }
 
@@ -60,12 +59,11 @@ func (g *Git) BranchExists(branch string) bool {
 	output, err := g.Command("branch", "--list", "--all", "*"+branch).Output()
 	g.DebugStdoutErr(output, err)
 
-	n := len(output)
-	content := strings.TrimSpace(string(output[:n]))
+	content := strings.TrimSpace(string(output[:]))
 	lines := strings.Split(content, "\n")
 
 	if err != nil {
-		g.logger.Emergencyf("checking of branch '%s' exists: %s \n %s", string(output[:n]), err)
+		g.logger.Emergencyf("checking of branch '%s' exists: %s \n %s", string(output[:]), err)
 		os.Exit(1)
 	}
 
@@ -101,8 +99,7 @@ func (g *Git) HasMergeConflict(branch string) (result bool) {
 	output, err := g.Command("merge", "--no-commit", branch).CombinedOutput()
 	g.DebugStdoutErr(output, err)
 
-	n := len(output)
-	content := strings.TrimSpace(string(output[:n]))
+	content := strings.TrimSpace(string(output[:]))
 	if content == "Already up-to-date." {
 		result = false
 	} else {
@@ -122,8 +119,7 @@ func (g *Git) IsDirty() bool {
 		panic(err)
 	}
 
-	n := len(output)
-	content := strings.TrimSpace(string(output[:n]))
+	content := strings.TrimSpace(string(output[:]))
 	if content == "" {
 		return false
 	}
@@ -145,8 +141,7 @@ func (g *Git) IsInSyncWith(branch string) (result bool) {
 	output, err := g.Command("merge", "--no-commit", branch).CombinedOutput()
 	g.DebugStdoutErr(output, err)
 
-	n := len(output)
-	content := strings.TrimSpace(string(output[:n]))
+	content := strings.TrimSpace(string(output[:]))
 	if content == "Already up-to-date." {
 		result = true
 	} else {

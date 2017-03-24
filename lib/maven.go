@@ -98,13 +98,11 @@ func (m *Maven) UpdateParent() (bool, string, error) {
 	m.DebugStdoutErr(output, err)
 
 	if err != nil {
-		n := len(output)
-		m.logger.Error("something failed: %s\n %s", err, string(output[:n]))
+		m.logger.Error("something failed: %s\n %s", err, string(output[:]))
 		os.Exit(1)
 	}
 
-	n := len(output)
-	content := string(output[:n])
+	content := string(output[:])
 	lines := strings.Split(content, "\n")
 
 	updateToken := "[INFO] Updating parent from "
